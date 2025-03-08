@@ -1,16 +1,12 @@
+// Updated generate-firebaserc.js
 const fs = require('fs');
+const path = require('path');
 
-// Read the project ID from environment variable
-const projectId = process.env.FIREBASE_PROJECT_ID;
-if (!projectId) {
-    console.error('FIREBASE_PROJECT_ID environment variable is required');
+const templatePath = path.join(__dirname, '.firebaserc.template');
+const outputPath = path.join(__dirname, '..', '.firebaserc');
+
+// Add error handling for missing template
+if (!fs.existsSync(templatePath)) {
+    console.error('Template file not found at:', templatePath);
     process.exit(1);
 }
-
-// Read the template and replace placeholders
-let templateContent = fs.readFileSync('.firebaserc.template', 'utf8');
-templateContent = templateContent.replace(/PROJECT_ID_PLACEHOLDER/g, projectId);
-
-// Write the generated file
-fs.writeFileSync('.firebaserc', templateContent);
-console.log(`.firebaserc file generated successfully for project: ${projectId}`);

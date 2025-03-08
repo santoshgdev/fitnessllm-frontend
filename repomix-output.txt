@@ -1,0 +1,432 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+================================================================
+File Summary
+================================================================
+
+Purpose:
+--------
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+File Format:
+------------
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Multiple file entries, each consisting of:
+  a. A separator line (================)
+  b. The file path (File: path/to/file)
+  c. Another separator line
+  d. The full contents of the file
+  e. A blank line
+
+Usage Guidelines:
+-----------------
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+Notes:
+------
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+
+Additional Info:
+----------------
+
+================================================================
+Directory Structure
+================================================================
+.github/
+  workflows/
+    firebase-deploy-dev.yml
+    firebase-deploy-prod.yml
+    firebase-deploy-test.yml
+public/
+  index.html
+scripts/
+  generate-firebaserc.js
+server/
+  config/
+    passport-setup.js
+  public/
+    css/
+      styles.css
+  routes/
+    auth-routes.js
+    profile-routes.js
+  app.js
+  package.json
+.gitignore
+Makefile
+README.md
+
+================================================================
+Files
+================================================================
+
+================
+File: .github/workflows/firebase-deploy-dev.yml
+================
+name: Deploy to Firebase Dev
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Generate .firebaserc
+        run: node scripts/generate-firebaserc.js
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.PROJECT_ID }}
+
+      - name: Deploy to Firebase Dev
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: ${{ secrets.PROJECT_ID }}
+          target: dev
+          channelId: live
+
+================
+File: .github/workflows/firebase-deploy-prod.yml
+================
+name: Deploy to Firebase Production
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Generate .firebaserc
+        run: node scripts/generate-firebaserc.js
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      - name: Deploy to Firebase Production
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          target: prod
+          channelId: live
+
+================
+File: .github/workflows/firebase-deploy-test.yml
+================
+name: Deploy to Firebase Test
+on:
+  push:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Generate .firebaserc
+        run: node scripts/generate-firebaserc.js
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.PROJECT_ID }}
+
+      - name: Deploy to Firebase Test
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: '${{ secrets.PROJECT_ID }}'
+          target: test
+          channelId: live
+
+================
+File: public/index.html
+================
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/11.4.0/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/11.4.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/11.4.0/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+================
+File: scripts/generate-firebaserc.js
+================
+const fs = require('fs');
+
+// Read the project ID from environment variable
+const projectId = process.env.FIREBASE_PROJECT_ID;
+if (!projectId) {
+    console.error('FIREBASE_PROJECT_ID environment variable is required');
+    process.exit(1);
+}
+
+// Read the template and replace placeholders
+let templateContent = fs.readFileSync('.firebaserc.template', 'utf8');
+templateContent = templateContent.replace(/PROJECT_ID_PLACEHOLDER/g, projectId);
+
+// Write the generated file
+fs.writeFileSync('.firebaserc', templateContent);
+console.log(`.firebaserc file generated successfully for project: ${projectId}`);
+
+================
+File: server/config/passport-setup.js
+================
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: '/auth/google/callback'
+    },
+    (accessToken, refreshToken, profile, done) => {
+        // Handles user data from Google
+    }
+));
+
+================
+File: server/public/css/styles.css
+================
+.btn-google {
+    background: #4285F4;
+    color: white;
+    padding: 10px 20px;
+}
+
+================
+File: server/routes/auth-routes.js
+================
+router.get('/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+}));
+
+================
+File: server/routes/profile-routes.js
+================
+router.get('/', (req, res) => {
+    res.render('profile', { user: req.user });
+});
+
+================
+File: server/app.js
+================
+const express = require('express');
+const passport = require('passport');
+const app = express();
+
+// Basic configuration
+app.use(passport.initialize());
+app.set('view engine', 'ejs');
+
+// Routes
+app.get('/', (req, res) => {
+    res.render('home');
+});
+
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
+});
+
+================
+File: server/package.json
+================
+{
+  "name": "oauth-strava-app",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "Web framework",
+    "passport": "Authentication middleware",
+    "passport-google-oauth20": "Google login strategy",
+    "ejs": "Template engine for HTML",
+    "dotenv": "Loads environment variables"
+  }
+}
+
+================
+File: .gitignore
+================
+# Firebase build and deployment files
+/firebase-debug.log
+/firebase-debug.*.log
+.firebaserc.template
+
+# Firebase Hosting
+/firebase.json
+*.cache
+hosting/.cache
+
+# Firebase Functions
+/functions/node_modules/
+/functions/.env
+/functions/package-lock.json
+
+# Firebase Emulators
+/firebase-*.zip
+/.firebase/
+/emulator-ui/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (local configs)
+/.env.*
+.idea
+
+================
+File: Makefile
+================
+repomix:
+	repomix
+
+================
+File: README.md
+================
+# fitnessllm-frontend
+
+
+
+================================================================
+End of Codebase
+================================================================

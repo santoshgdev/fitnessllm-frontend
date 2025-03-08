@@ -20,11 +20,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Generate .firebaserc
-        run: node scripts/generate-firebaserc.js
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
       - name: Deploy to Firebase Test
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
