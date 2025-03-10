@@ -1,23 +1,27 @@
 /* === Imports === */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"
-import { getAuth,
+import {initializeApp} from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"
+import {
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
+    getAuth,
     GoogleAuthProvider,
-    signInWithPopup } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"
-import { getFirestore,
-    collection,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut
+} from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"
+import {
     addDoc,
-    serverTimestamp,
-    onSnapshot,
-    query,
-    where,
-    orderBy,
+    collection,
+    deleteDoc,
     doc,
+    getFirestore,
+    onSnapshot,
+    orderBy,
+    query,
+    serverTimestamp,
     updateDoc,
-    deleteDoc } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"
+    where
+} from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"
 
 /* === Firebase Setup === */
 /* IMPORTANT: Replace this with your own firebaseConfig when doing challenges */
@@ -38,10 +42,8 @@ const db = getFirestore(app)
 
 document.getElementById('connect-strava-btn').addEventListener('click', () => {
     const clientId = '144789';
-    const redirectUri = encodeURIComponent('https://yourapp.com/strava-callback');
-    const scope = 'read,activity:read';  // adjust scopes as needed
-    const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
-    window.location.href = authUrl;
+    const redirectUri = encodeURIComponent('http://localhost'); // Update this to match your Strava settings
+    window.location.href = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=read,activity:read`;
 });
 
 /* === UI === */
@@ -66,7 +68,6 @@ const userGreetingEl = document.getElementById("user-greeting")
 
 const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 const textareaEl = document.getElementById("post-input")
-const postButtonEl = document.getElementById("post-btn")
 
 const allFilterButtonEl = document.getElementById("all-filter-btn")
 
@@ -90,8 +91,6 @@ for (let moodEmojiEl of moodEmojiEls) {
 for (let filterButtonEl of filterButtonEls) {
     filterButtonEl.addEventListener("click", selectFilter)
 }
-
-postButtonEl.addEventListener("click", postButtonPressed)
 
 /* === State === */
 

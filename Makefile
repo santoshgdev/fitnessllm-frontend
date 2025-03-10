@@ -1,5 +1,4 @@
 dev:
-#	npm run build
 	firebase deploy --only hosting:dev
 
 prod:
