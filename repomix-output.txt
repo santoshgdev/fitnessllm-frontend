@@ -1,4 +1,4 @@
-This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
 
 ================================================================
 File Summary
@@ -36,6 +36,7 @@ Notes:
 ------
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching these patterns are excluded: node_modules/*, .firebase/*
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 
@@ -50,24 +51,21 @@ Directory Structure
     firebase-deploy-dev.yml
     firebase-deploy-prod.yml
     firebase-deploy-test.yml
-public/
+assets/
+  icons/
+    icon-sign-out.svg
+y/
   index.html
-scripts/
-  generate-firebaserc.js
-server/
-  config/
-    passport-setup.js
-  public/
-    css/
-      styles.css
-  routes/
-    auth-routes.js
-    profile-routes.js
-  app.js
-  package.json
-.gitignore
+.firebaserc
+firebase.json
+index.css
+index.html
+index.js
 Makefile
+package.json
 README.md
+rules.txt
+vite.config.js
 
 ================================================================
 Files
@@ -178,11 +176,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Generate .firebaserc
-        run: node scripts/generate-firebaserc.js
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
       - name: Deploy to Firebase Test
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -193,7 +186,12 @@ jobs:
           channelId: live
 
 ================
-File: public/index.html
+File: assets/icons/icon-sign-out.svg
+================
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+
+================
+File: y/index.html
 ================
 <!DOCTYPE html>
 <html>
@@ -286,144 +284,1161 @@ File: public/index.html
 </html>
 
 ================
-File: scripts/generate-firebaserc.js
-================
-const fs = require('fs');
-
-// Read the project ID from environment variable
-const projectId = process.env.FIREBASE_PROJECT_ID;
-if (!projectId) {
-    console.error('FIREBASE_PROJECT_ID environment variable is required');
-    process.exit(1);
-}
-
-// Read the template and replace placeholders
-let templateContent = fs.readFileSync('.firebaserc.template', 'utf8');
-templateContent = templateContent.replace(/PROJECT_ID_PLACEHOLDER/g, projectId);
-
-// Write the generated file
-fs.writeFileSync('.firebaserc', templateContent);
-console.log(`.firebaserc file generated successfully for project: ${projectId}`);
-
-================
-File: server/config/passport-setup.js
-================
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-passport.use(new GoogleStrategy({
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: '/auth/google/callback'
-    },
-    (accessToken, refreshToken, profile, done) => {
-        // Handles user data from Google
-    }
-));
-
-================
-File: server/public/css/styles.css
-================
-.btn-google {
-    background: #4285F4;
-    color: white;
-    padding: 10px 20px;
-}
-
-================
-File: server/routes/auth-routes.js
-================
-router.get('/google', passport.authenticate('google', {
-    scope: ['profile', 'email']
-}));
-
-================
-File: server/routes/profile-routes.js
-================
-router.get('/', (req, res) => {
-    res.render('profile', { user: req.user });
-});
-
-================
-File: server/app.js
-================
-const express = require('express');
-const passport = require('passport');
-const app = express();
-
-// Basic configuration
-app.use(passport.initialize());
-app.set('view engine', 'ejs');
-
-// Routes
-app.get('/', (req, res) => {
-    res.render('home');
-});
-
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
-});
-
-================
-File: server/package.json
+File: .firebaserc
 ================
 {
-  "name": "oauth-strava-app",
-  "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+  "projects": {
+    "default": "stable-splicer-447620-b4"
   },
-  "dependencies": {
-    "express": "Web framework",
-    "passport": "Authentication middleware",
-    "passport-google-oauth20": "Google login strategy",
-    "ejs": "Template engine for HTML",
-    "dotenv": "Loads environment variables"
-  }
+  "targets": {
+    "stable-splicer-447620-b4": {
+      "hosting": {
+        "test": [
+          "stable-splicer-447620-b4-test"
+        ],
+        "dev": [
+          "stable-splicer-447620-b4-dev"
+        ],
+        "prod": [
+          "stable-splicer-447620-b4-prod"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
 
 ================
-File: .gitignore
+File: firebase.json
 ================
-# Firebase build and deployment files
-/firebase-debug.log
-/firebase-debug.*.log
-.firebaserc.template
+{
+  "hosting": [
+    {
+      "target": "test",
+      "public": ".",
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    },
+    {
+      "target": "dev",
+      "public": ".",
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    },
+    {
+      "target": "prod",
+      "public": ".",
+      "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    }
+  ]
+}
 
-# Firebase Hosting
-/firebase.json
-*.cache
-hosting/.cache
+================
+File: index.css
+================
+:root {
+    --primary-color: #FFDE00;
+    --primary-light-color: #FFE769;
+    --secondary-color: #FFE4BA;
+    --secondary-light-color: #FFF6E8;
+    --post-color: #62EEA8;
+    --delete-color: #FF9F9F;
+    --light-color: #FFFEFC;
+    --grey-color: #747E79;
+    --dark-color: #000000;
+    --white-color: #FFFEFC;
 
-# Firebase Functions
-/functions/node_modules/
-/functions/.env
-/functions/package-lock.json
+    --primary-font: 'Cabin', sans-serif;
+    --seconday-font: 'Calistoga', sans-serif;
+    
+    --border-width: 3px;
+    --element-border-radius: 5px;
+    
+    --button-height: 5px;
+    
+    --small-button-height: 2px;
+    
+    --element-padding: 0.8em;
+    
+    --maximum-width: 320px;
+}
 
-# Firebase Emulators
-/firebase-*.zip
-/.firebase/
-/emulator-ui/
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+}
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+body {
+    color: var(--dark-color);
+    background-color: var(--secondary-light-color);
+    font-family: var(--primary-font);
+}
 
-# Environment files (local configs)
-/.env.*
-.idea
+/* === Typography === */
+
+h1, h2, h3, p {
+    margin: 0;
+}
+
+h2, h3 {
+    font-weight: 500;
+}
+
+.app-title {
+    font-family: var(--seconday-font);
+    font-size: 2.5em;
+    text-align: center;
+}
+
+/* === Sections === */
+
+section {
+    margin: 3em 0;
+}
+
+.auth-fields-and-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* === User Section === */
+
+.user-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8em;
+}
+
+.user-section img {
+    width: 3.75em;
+    height: 3.75em;
+    border-radius: 100%;
+    border: var(--border-width) solid var(--dark-color);
+}
+
+.user-section h2 {
+    font-size: 1.2em;
+}
+
+/* === Post Section === */
+
+.post-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* == Post Section - Mood Emojis == */
+
+.mood-emojis {
+    display: flex;
+}
+
+.mood-emoji-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.8em;
+    gap: 0.3em;
+    background-color: transparent;
+    border: 0;
+}
+
+.mood-emoji-btn:hover {
+    transform: scale(1.2);
+}
+
+.mood-emoji-btn img {
+    width: 3.1em;
+    height: 3.1em;
+}
+
+.selected-emoji {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.unselected-emoji {
+    transform: scale(1);
+    opacity: 0.5;
+}
+
+/* === Posts Section === */
+
+.posts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+	margin-bottom: 1.8em;
+}
+
+/* == Posts Section - Filters == */
+
+.filters-and-posts-section {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.filters-section {
+    display: flex;
+    gap: 0.4em;
+}
+
+.filter-btn {
+    color: var(--dark-color);
+    font-size: 0.9em;
+    padding: 0.3em;
+    background-color: transparent;
+}
+
+.selected-filter {
+    color: var(--white-color);
+    background-color: var(--dark-color);
+}
+
+/* == Posts Section - Posts == */
+
+.post {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-color);
+    padding: 0.8em;
+    border-radius: var(--element-border-radius);
+    gap: 0.4em;
+}
+
+/* = Posts Section - Posts - Header = */
+
+.post .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.post .header h3 {
+    font-size: 1em;
+}
+
+.post .header img {
+    width: 2em;
+    height: 2em;
+}
+
+/* = Posts Section - Posts - Body = */
+
+.post p {
+    font-size: 0.9em;
+    line-height: 1.3em;
+}
+
+/* = Posts Section - Posts - Footer = */
+
+.post .footer {
+    display: flex;
+    align-self: flex-start;
+    gap: 0.4em;
+}
+
+.post .footer button {
+    font-size: 0.9em;
+    padding: 0.2em 0.8em;
+    box-shadow: 0px var(--small-button-height) 0px 0px var(--dark-color);
+    position: relative;
+}
+
+.post .footer button:hover {
+    top: var(--small-button-height);
+    box-shadow: none;
+}
+
+.post .footer .edit-color {
+    background-color: var(--post-color);
+}
+
+.post .footer .delete-color {
+    background-color: var(--delete-color);
+}
+
+/* === Nav === */
+
+nav {
+    margin: 0.6em 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* === Structure === */
+
+.container {
+    max-width: var(--maximum-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#logged-out-view .container {
+    gap: 2em;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* === Common for elements === */
+
+input, button, textarea {
+    font-family: inherit;
+    padding: var(--element-padding);
+    border-radius: var(--element-border-radius);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input, button {
+    font-size: 1.1em;
+    text-align: center;
+    border: var(--border-width) solid var(--dark-color);
+}
+
+input:focus, button:focus, textarea:focus {
+    outline: none;
+}
+
+/* === Input fields === */
+
+textarea {
+    font-size: 1em;
+    border: 0;
+    box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, .25);
+    resize: none;
+    height: 6em;
+}
+
+textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--grey-color);
+    opacity: 1; /* Firefox */
+}
+
+textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: var(--grey-color);
+}
+
+textarea::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--grey-color);
+}
+
+input {
+    font-weight: 300;
+}
+
+input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--grey-color);
+    opacity: 1; /* Firefox */
+}
+
+input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: var(--grey-color);
+}
+
+input::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--grey-color);
+}
+
+/* === Buttons === */
+
+button {
+    font-weight: 600;
+    width: 100%;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    box-shadow: 0px var(--button-height) 0px 0px var(--dark-color);
+    position: relative;
+}
+
+.primary-btn:hover {
+    top: var(--button-height);
+    box-shadow: none;
+}
+
+.secondary-btn {
+    padding: 0.4em;
+    background-color: transparent;
+}
+
+.secondary-btn:hover {
+    color: var(--light-color);
+    background-color: var(--dark-color);
+}
+
+.provider-btn {
+    color: var(--dark-color);
+    background-color: var(--light-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    border: 0;
+    box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, .25);
+}
+
+.provider-btn:hover {
+    transition: all 0.2s ease;
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, .25);
+}
+
+.google-btn-logo {
+    width: 1.375em;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 1.875em;
+}
+
+.icon-img-btn:hover {
+    filter: invert(0.5);
+}
+
+/* === IDs === */
+
+#logged-out-view {
+    display: none;
+}
+
+#logged-in-view {
+    display: none;
+    margin: 0;
+}
+
+================
+File: index.html
+================
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>FitnessLLM</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+        <section id="logged-out-view">
+            <div class="container">
+                <h1 class="app-title">FitnessLLM</h1>
+                
+                <div class="provider-buttons">
+                    <button id="sign-in-with-google-btn" class="provider-btn">
+                        <img src="assets/providers/google.png" class="google-btn-logo">
+                        Sign in with Google
+                    </button>
+                </div>
+                
+                <div class="auth-fields-and-buttons">
+                    <input id="email-input" type="email" placeholder="Email">
+                    <input id="password-input" type="password" placeholder="Password">
+                    
+                    <button id="sign-in-btn" class="primary-btn">Sign in</button>
+                    <button id="create-account-btn" class="secondary-btn">Create Account</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="logged-in-view">
+            <div class="container">
+                <nav>
+                    <button id="sign-out-btn" class="icon-btn">
+                        <img src="assets/icons/icon-sign-out.svg" class="icon-img-btn">
+                    </button>
+                </nav>
+                
+                <div class="app-container">
+                    <div class="user-section">
+                        <img id="user-profile-picture">
+                        <h2 id="user-greeting"></h2>
+                    </div>
+                    
+                    <div class="mood-emojis">
+                        <button id="mood-1" class="mood-emoji-btn">
+                            <img src="assets/emojis/1.png">
+                            Awful
+                        </button>
+                        <button id="mood-2" class="mood-emoji-btn">
+                            <img src="assets/emojis/2.png">
+                            Bad
+                        </button>
+                        <button id="mood-3" class="mood-emoji-btn">
+                            <img src="assets/emojis/3.png">
+                            Meh
+                        </button>
+                        <button id="mood-4" class="mood-emoji-btn">
+                            <img src="assets/emojis/4.png">
+                            Good
+                        </button>
+                        <button id="mood-5" class="mood-emoji-btn">
+                            <img src="assets/emojis/5.png">
+                            Amazing
+                        </button>
+                    </div>
+                    
+                    <div class="post-section">
+                        <textarea id="post-input" placeholder="Write down how you're feeling..."></textarea>
+                        <button id="post-btn" class="primary-btn">Post</button>
+                    </div>
+                    
+                    <div class="filters-and-posts-section">
+                        <div class="filters-section">
+                            <button id="today-filter-btn" class="filter-btn">Today</button>
+                            <button id="week-filter-btn" class="filter-btn">Week</button>
+                            <button id="month-filter-btn" class="filter-btn">Month</button>
+                            <button id="all-filter-btn" class="filter-btn">All</button>
+                        </div>
+                        
+                        <div id="posts" class="posts-section">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <script src="index.js" type="module" nonce="tkqLe09Xl72Cby-alY52MQ"></script>
+    </body>
+
+</html>
+
+================
+File: index.js
+================
+/* === Imports === */
+import { initializeApp } from "firebase/app"
+import { getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    signInWithPopup,
+    GoogleAuthProvider} from "firebase/auth"
+import { getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    onSnapshot,
+    query,
+    where,
+    orderBy,
+    doc,
+    updateDoc,
+    setDoc,
+    deleteDoc } from "firebase/firestore"
+
+/* === Firebase Setup === */
+/* IMPORTANT: Replace this with your own firebaseConfig when doing challenges */
+const firebaseConfig = {
+    apiKey: "AIzaSyCu5Lf5E7MxuSUYR5T7zqUo9HNLFaD1530",
+    authDomain: "stable-splicer-447620-b4-test.firebaseapp.com",
+    projectId: "stable-splicer-447620-b4-test",
+    storageBucket: "stable-splicer-447620-b4-test.firebasestorage.app",
+    messagingSenderId: "413377316902",
+    appId: "1:413377316902:web:c1c39fd3d328f084fabee7"
+};
+
+
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const provider = new GoogleAuthProvider()
+const db = getFirestore(app)
+
+/* === UI === */
+
+/* == UI - Elements == */
+
+const viewLoggedOut = document.getElementById("logged-out-view")
+const viewLoggedIn = document.getElementById("logged-in-view")
+
+const signInWithGoogleButtonEl = document.getElementById("sign-in-with-google-btn")
+
+const emailInputEl = document.getElementById("email-input")
+const passwordInputEl = document.getElementById("password-input")
+
+const signInButtonEl = document.getElementById("sign-in-btn")
+const createAccountButtonEl = document.getElementById("create-account-btn")
+
+const signOutButtonEl = document.getElementById("sign-out-btn")
+
+const userProfilePictureEl = document.getElementById("user-profile-picture")
+const userGreetingEl = document.getElementById("user-greeting")
+
+const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
+const textareaEl = document.getElementById("post-input")
+const postButtonEl = document.getElementById("post-btn")
+
+const allFilterButtonEl = document.getElementById("all-filter-btn")
+
+const filterButtonEls = document.getElementsByClassName("filter-btn")
+
+const postsEl = document.getElementById("posts")
+
+/* == UI - Event Listeners == */
+
+signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
+
+signInButtonEl.addEventListener("click", authSignInWithEmail)
+createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
+
+signOutButtonEl.addEventListener("click", authSignOut)
+
+for (let moodEmojiEl of moodEmojiEls) {
+    moodEmojiEl.addEventListener("click", selectMood)
+}
+
+for (let filterButtonEl of filterButtonEls) {
+    filterButtonEl.addEventListener("click", selectFilter)
+}
+
+postButtonEl.addEventListener("click", postButtonPressed)
+
+/* === State === */
+
+let moodState = 0
+
+/* === Global Constants === */
+
+const collectionName = "posts"
+
+/* === Main Code === */
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        showLoggedInView()
+        showProfilePicture(userProfilePictureEl, user)
+        showUserGreeting(userGreetingEl, user)
+        updateFilterButtonStyle(allFilterButtonEl)
+        fetchAllPosts(user)
+    } else {
+        showLoggedOutView()
+    }
+})
+
+/* === Functions === */
+
+/* = Functions - Firebase - Authentication = */
+
+signInWithPopup(auth, provider)
+    .then(async (result) => {
+        console.log("Google sign-in successful", result.user);
+        try {
+            await setDoc(doc(db, "users", user.uid), {...});
+            console.log("User data written successfully");
+        } catch (dbError) {
+            console.error("Database write error:", dbError);
+        }
+    })
+    .catch((error) => {
+        console.error("Google sign-in error:", error);
+    });
+
+function authSignInWithEmail() {
+    const email = emailInputEl.value
+    const password = passwordInputEl.value
+
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            clearAuthFields()
+        })
+        .catch((error) => {
+            console.error(error.message)
+        })
+}
+
+function authCreateAccountWithEmail() {
+    const email = emailInputEl.value
+    const password = passwordInputEl.value
+
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            clearAuthFields()
+        })
+        .catch((error) => {
+            console.error(error.message)
+        })
+}
+
+function authSignOut() {
+    signOut(auth)
+        .then(() => {
+        }).catch((error) => {
+        console.error(error.message)
+    })
+}
+
+/* = Functions - Firebase - Cloud Firestore = */
+
+async function addPostToDB(postBody, user) {
+    try {
+        const docRef = await addDoc(collection(db, collectionName), {
+            body: postBody,
+            uid: user.uid,
+            createdAt: serverTimestamp(),
+            mood: moodState
+        })
+        console.log("Document written with ID: ", docRef.id)
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
+async function updatePostInDB(docId, newBody) {
+    const postRef = doc(db, collectionName, docId);
+
+    await updateDoc(postRef, {
+        body: newBody
+    })
+}
+
+async function deletePostFromDB(docId) {
+    await deleteDoc(doc(db, collectionName, docId))
+}
+
+function fetchInRealtimeAndRenderPostsFromDB(query, user) {
+    onSnapshot(query, (querySnapshot) => {
+        clearAll(postsEl)
+
+        querySnapshot.forEach((doc) => {
+            renderPost(postsEl, doc)
+        })
+    })
+}
+
+function fetchTodayPosts(user) {
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+
+    const postsRef = collection(db, collectionName)
+
+    const q = query(postsRef, where("uid", "==", user.uid),
+        where("createdAt", ">=", startOfDay),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchWeekPosts(user) {
+    const startOfWeek = new Date()
+    startOfWeek.setHours(0, 0, 0, 0)
+
+    if (startOfWeek.getDay() === 0) { // If today is Sunday
+        startOfWeek.setDate(startOfWeek.getDate() - 6) // Go to previous Monday
+    } else {
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1)
+    }
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+
+    const postsRef = collection(db, collectionName)
+
+    const q = query(postsRef, where("uid", "==", user.uid),
+        where("createdAt", ">=", startOfWeek),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchMonthPosts(user) {
+    const startOfMonth = new Date()
+    startOfMonth.setHours(0, 0, 0, 0)
+    startOfMonth.setDate(1)
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999)
+
+    const postsRef = collection(db, collectionName)
+
+    const q = query(postsRef, where("uid", "==", user.uid),
+        where("createdAt", ">=", startOfMonth),
+        where("createdAt", "<=", endOfDay),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchAllPosts(user) {
+    const postsRef = collection(db, collectionName)
+
+    const q = query(postsRef, where("uid", "==", user.uid),
+        orderBy("createdAt", "desc"))
+
+    fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+/* == Functions - UI Functions == */
+
+function createPostHeader(postData) {
+    /*
+        <div class="header">
+        </div>
+    */
+    const headerDiv = document.createElement("div")
+    headerDiv.className = "header"
+
+    /*
+        <h3>21 Sep 2023 - 14:35</h3>
+    */
+    const headerDate = document.createElement("h3")
+    headerDate.textContent = displayDate(postData.createdAt)
+    headerDiv.appendChild(headerDate)
+
+    /*
+        <img src="assets/emojis/5.png">
+    */
+    const moodImage = document.createElement("img")
+    moodImage.src = `assets/emojis/${postData.mood}.png`
+    headerDiv.appendChild(moodImage)
+
+    return headerDiv
+}
+
+function createPostBody(postData) {
+    /*
+        <p>This is a post</p>
+    */
+    const postBody = document.createElement("p")
+    postBody.innerHTML = replaceNewlinesWithBrTags(postData.body)
+
+    return postBody
+}
+
+function createPostUpdateButton(wholeDoc) {
+    const postId = wholeDoc.id
+    const postData = wholeDoc.data()
+
+    /* 
+        <button class="edit-color">Edit</button>
+    */
+    const button = document.createElement("button")
+    button.textContent = "Edit"
+    button.classList.add("edit-color")
+    button.addEventListener("click", function() {
+        const newBody = prompt("Edit the post", postData.body)
+
+        if (newBody) {
+            updatePostInDB(postId, newBody)
+        }
+    })
+
+    return button
+}
+
+function createPostDeleteButton(wholeDoc) {
+    const postId = wholeDoc.id
+
+    /* 
+        <button class="delete-color">Delete</button>
+    */
+    const button = document.createElement('button')
+    button.textContent = 'Delete'
+    button.classList.add("delete-color")
+    button.addEventListener('click', function() {
+        deletePostFromDB(postId)
+    })
+    return button
+}
+
+function createPostFooter(wholeDoc) {
+    /* 
+        <div class="footer">
+            <button>Edit</button>
+            <button>Delete</button>
+        </div>
+    */
+    const footerDiv = document.createElement("div")
+    footerDiv.className = "footer"
+
+    footerDiv.appendChild(createPostUpdateButton(wholeDoc))
+    footerDiv.appendChild(createPostDeleteButton(wholeDoc))
+
+    return footerDiv
+}
+
+function renderPost(postsEl, wholeDoc) {
+    const postData = wholeDoc.data()
+
+    const postDiv = document.createElement("div")
+    postDiv.className = "post"
+
+    postDiv.appendChild(createPostHeader(postData))
+    postDiv.appendChild(createPostBody(postData))
+    postDiv.appendChild(createPostFooter(wholeDoc))
+
+    postsEl.appendChild(postDiv)
+}
+
+function replaceNewlinesWithBrTags(inputString) {
+    return inputString.replace(/\n/g, "<br>")
+}
+
+function postButtonPressed() {
+    const postBody = textareaEl.value
+    const user = auth.currentUser
+
+    if (postBody && moodState) {
+        addPostToDB(postBody, user)
+        clearInputField(textareaEl)
+        resetAllMoodElements(moodEmojiEls)
+    }
+}
+
+function clearAll(element) {
+    element.innerHTML = ""
+}
+
+function showLoggedOutView() {
+    hideView(viewLoggedIn)
+    showView(viewLoggedOut)
+}
+
+function showLoggedInView() {
+    hideView(viewLoggedOut)
+    showView(viewLoggedIn)
+}
+
+function showView(view) {
+    view.style.display = "flex"
+}
+
+function hideView(view) {
+    view.style.display = "none"
+}
+
+function clearInputField(field) {
+    field.value = ""
+}
+
+function clearAuthFields() {
+    clearInputField(emailInputEl)
+    clearInputField(passwordInputEl)
+}
+
+function showProfilePicture(imgElement, user) {
+    const photoURL = user.photoURL
+
+    if (photoURL) {
+        imgElement.src = photoURL
+    } else {
+        imgElement.src = "assets/images/default-profile-picture.jpeg"
+    }
+}
+
+function showUserGreeting(element, user) {
+    const displayName = user.displayName
+
+    if (displayName) {
+        const userFirstName = displayName.split(" ")[0]
+
+        element.textContent = `Hey ${userFirstName}, how are you?`
+    } else {
+        element.textContent = `Hey friend, how are you?`
+    }
+}
+
+function displayDate(firebaseDate) {
+    if (!firebaseDate) {
+        return "Date processing"
+    }
+
+    const date = firebaseDate.toDate()
+
+    const day = date.getDate()
+    const year = date.getFullYear()
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    const month = monthNames[date.getMonth()]
+
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    hours = hours < 10 ? "0" + hours : hours
+    minutes = minutes < 10 ? "0" + minutes : minutes
+
+    return `${day} ${month} ${year} - ${hours}:${minutes}`
+}
+
+/* = Functions - UI Functions - Mood = */
+
+function selectMood(event) {
+    const selectedMoodEmojiElementId = event.currentTarget.id
+
+    changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
+
+    const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
+
+    moodState = chosenMoodValue
+}
+
+function changeMoodsStyleAfterSelection(selectedMoodElementId, allMoodElements) {
+    for (let moodEmojiEl of moodEmojiEls) {
+        if (selectedMoodElementId === moodEmojiEl.id) {
+            moodEmojiEl.classList.remove("unselected-emoji")
+            moodEmojiEl.classList.add("selected-emoji")
+        } else {
+            moodEmojiEl.classList.remove("selected-emoji")
+            moodEmojiEl.classList.add("unselected-emoji")
+        }
+    }
+}
+
+function resetAllMoodElements(allMoodElements) {
+    for (let moodEmojiEl of allMoodElements) {
+        moodEmojiEl.classList.remove("selected-emoji")
+        moodEmojiEl.classList.remove("unselected-emoji")
+    }
+
+    moodState = 0
+}
+
+function returnMoodValueFromElementId(elementId) {
+    return Number(elementId.slice(5))
+}
+
+/* == Functions - UI Functions - Date Filters == */
+
+function resetAllFilterButtons(allFilterButtons) {
+    for (let filterButtonEl of allFilterButtons) {
+        filterButtonEl.classList.remove("selected-filter")
+    }
+}
+
+function updateFilterButtonStyle(element) {
+    element.classList.add("selected-filter")
+}
+
+function fetchPostsFromPeriod(period, user) {
+    if (period === "today") {
+        fetchTodayPosts(user)
+    } else if (period === "week") {
+        fetchWeekPosts(user)
+    } else if (period === "month") {
+        fetchMonthPosts(user)
+    } else {
+        fetchAllPosts(user)
+    }
+}
+
+function selectFilter(event) {
+    const user = auth.currentUser
+    const selectedFilterElementId = event.target.id
+    const selectedFilterPeriod = selectedFilterElementId.split("-")[0]
+    const selectedFilterElement = document.getElementById(selectedFilterElementId)
+    resetAllFilterButtons(filterButtonEls)
+    updateFilterButtonStyle(selectedFilterElement)
+    fetchPostsFromPeriod(selectedFilterPeriod, user)
+}
 
 ================
 File: Makefile
 ================
+test:
+	# Deploy to test environment
+	firebase deploy --only hosting:test
+
+dev:
+	# Deploy to dev environment
+	firebase deploy --only hosting:dev
+
+prod:
+	# Deploy to production environment
+	firebase deploy --only hosting:prod
+
 repomix:
-	repomix
+	repomix --ignore "node_modules/*,.firebase/*"
+
+================
+File: package.json
+================
+{
+  "name": "Scrim-s05kjk0",
+  "description": "https://scrimba.com/learn-firebase-c02r/~01/s0f7svfr8k/head",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^10.1.0",
+    "vite": "latest"
+  }
+}
 
 ================
 File: README.md
 ================
-# fitnessllm-frontend
+# Getting Started
+Install the dependencies and run the project
+```
+npm install
+npm start
+```
+
+Head over to https://vitejs.dev/ to learn more about configuring vite
+## About Scrimba
+
+At Scrimba our goal is to create the best possible coding school at the cost of a gym membership! 💜
+If we succeed with this, it will give anyone who wants to become a software developer a realistic shot at succeeding, regardless of where they live and the size of their wallets 🎉
+The Frontend Developer Career Path aims to teach you everything you need to become a Junior Developer, or you could take a deep-dive with one of our advanced courses 🚀
+
+- [Our courses](https://scrimba.com/allcourses)
+- [The Frontend Career Path](https://scrimba.com/learn/frontend)
+- [Become a Scrimba Pro member](https://scrimba.com/pricing)
+
+Happy Coding!
+
+================
+File: rules.txt
+================
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+
+================
+File: vite.config.js
+================
+import {defineConfig} from "vite"
+
+export default defineConfig({
+	plugins: [
+		
+	]
+})
 
 
 

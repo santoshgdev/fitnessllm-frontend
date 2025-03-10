@@ -1,0 +1,14 @@
+{
+  "name": "Scrim-s05kjk0",
+  "description": "https://scrimba.com/learn-firebase-c02r/~01/s0f7svfr8k/head",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^10.1.0",
+    "vite": "latest"
+  }
+}
