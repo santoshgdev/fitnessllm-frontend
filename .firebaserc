@@ -5,17 +5,11 @@
   "targets": {
     "stable-splicer-447620-b4": {
       "hosting": {
-        "test": [
-          "stable-splicer-447620-b4-test"
-        ],
         "dev": [
           "stable-splicer-447620-b4-dev"
         ],
         "prod": [
           "stable-splicer-447620-b4-prod"
-        ],
-        "orig": [
-          "stable-splicer-447620-b4"
         ]
       }
     }

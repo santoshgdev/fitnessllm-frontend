@@ -1,16 +1,6 @@
 {
   "hosting": [
     {
-      "target": "orig",
-      "public": ".",
-      "rewrites": [{ "source": "**", "destination": "/index.html" }]
-    },
-    {
-      "target": "test",
-      "public": ".",
-      "rewrites": [{ "source": "**", "destination": "/index.html" }]
-    },
-    {
       "target": "dev",
       "public": ".",
       "rewrites": [{ "source": "**", "destination": "/index.html" }]

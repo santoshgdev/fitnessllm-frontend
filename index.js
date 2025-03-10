@@ -1,12 +1,12 @@
 /* === Imports === */
-import { initializeApp } from "firebase/app"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"
 import { getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
     GoogleAuthProvider,
-    signInWithPopup } from "firebase/auth"
+    signInWithPopup } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"
 import { getFirestore,
     collection,
     addDoc,
@@ -17,7 +17,7 @@ import { getFirestore,
     orderBy,
     doc,
     updateDoc,
-    deleteDoc } from "firebase/firestore"
+    deleteDoc } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"
 
 /* === Firebase Setup === */
 /* IMPORTANT: Replace this with your own firebaseConfig when doing challenges */
@@ -35,6 +35,14 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
 const db = getFirestore(app)
+
+document.getElementById('connect-strava-btn').addEventListener('click', () => {
+    const clientId = '144789';
+    const redirectUri = encodeURIComponent('https://yourapp.com/strava-callback');
+    const scope = 'read,activity:read';  // adjust scopes as needed
+    const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+    window.location.href = authUrl;
+});
 
 /* === UI === */
 
