@@ -4,6 +4,7 @@
       "target": "dev",
       "public": ".",
       "rewrites": [
+        { "source": "!**/*.mjs", "destination": "/index.html" },
         { "source": "!**/*.css", "destination": "/index.html" },
         { "source": "!**/*.js", "destination": "/index.html" }
       ],
@@ -41,6 +42,7 @@
       "target": "prod",
       "public": ".",
       "rewrites": [
+        { "source": "!**/*.mjs", "destination": "/index.html" },
         { "source": "!**/*.css", "destination": "/index.html" },
         { "source": "!**/*.js", "destination": "/index.html" }
       ],

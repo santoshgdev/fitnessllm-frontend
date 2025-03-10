@@ -33,3 +33,18 @@ repos:
           additional_dependencies:
             - stylelint@16.15.0
             - stylelint-config-standard@37.0.0
+
+  -   repo: https://github.com/pre-commit/mirrors-jshint
+      rev: v2.13.6
+      hooks:
+        -   id: jshint
+            files: \.(js|mjs)$
+            exclude: (min\.js$)
+
+  -   repo: local
+      hooks:
+        -   id: html-tidy
+            name: HTML Tidy
+            entry: tidy -q -e
+            language: system
+            types: [html]
