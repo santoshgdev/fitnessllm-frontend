@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 // Begin custom widget code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
-import '/flutter_flow/custom_functions.dart'; // Imports custom functions
-
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,7 +39,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   Future<void> _handleStravaCallback() async {
     try {
       // Get the current URL
-      final uri = GoRouter.of(context).location;
+      final uri = GoRouterState.of(context).uri.toString();
 
       // Extract the authorization code from the URL
       final code = Uri.parse(uri).queryParameters['code'];
