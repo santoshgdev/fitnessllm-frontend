@@ -20523,7 +20523,7 @@
       var _ = this;
       _._isLoading = true;
       _._strava_callback_handler$_status = "Processing Strava authorization...";
-      _._strava_callback_handler$_hasError = false;
+      _._hasInitialized = _._strava_callback_handler$_hasError = false;
       _._widget = null;
       _._debugLifecycleState = t0;
       _._framework$_element = null;
@@ -104934,7 +104934,14 @@
       this.super$State$initState();
       A.print("StravaCallbackHandler: initState called");
       A.print("TESTING 123");
-      this._handleStravaCallback$0();
+    },
+    didChangeDependencies$0() {
+      var _this = this;
+      _this.super$State$didChangeDependencies();
+      if (!_this._hasInitialized) {
+        _this._hasInitialized = true;
+        _this._handleStravaCallback$0();
+      }
     },
     _handleStravaCallback$0() {
       var $async$goto = 0,
@@ -105042,7 +105049,7 @@
       t3.push(B.SizedBox_null_20_null_null);
       t4 = _this._strava_callback_handler$_status;
       t3.push(A.Text$(t4, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, _this._strava_callback_handler$_hasError ? B.MaterialColor_nI1 : B.Color_vnR, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), B.TextAlign_2, _null, _null));
-      return A.Container$(_null, A.Center$(A.Column$(t3, B.CrossAxisAlignment_2, B.MainAxisAlignment_2, B.MainAxisSize_1), _null, _null), B.Clip_0, _null, _null, _null, t1, _null, _null, t2);
+      return A.Container$(_null, A.Center$(A.SingleChildScrollView$(A.Column$(t3, B.CrossAxisAlignment_2, B.MainAxisAlignment_2, B.MainAxisSize_0), _null, B.DragStartBehavior_1, _null, _null, B.Axis_1), _null, _null), B.Clip_0, _null, _null, _null, t1, _null, _null, t2);
     }
   };
   A._StravaCallbackHandlerState__handleStravaCallback_closure.prototype = {

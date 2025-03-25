@@ -3,7 +3,7 @@ flutter:
 
 dev:
 	make flutter
-	cd fitness_l_l_m && flutter pub add collection:^1.19.1 && flutter build web --debug
+	cd fitness_l_l_m && flutter pub add collection:^1.19.1 && flutter clean && flutter build web --debug
 	cd fitness_l_l_m && firebase deploy --only hosting:dev,functions
 
 prod:
