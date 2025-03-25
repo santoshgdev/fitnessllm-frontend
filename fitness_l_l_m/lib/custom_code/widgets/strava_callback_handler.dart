@@ -73,8 +73,8 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
 
       // Call the cloud function with the correct parameter name
       print('StravaCallbackHandler: Calling cloud function with code: $code');
-      final callable =
-          FirebaseFunctions.instance.httpsCallable('stravaAuthInitiate');
+      final callable = FirebaseFunctions.instanceFor(region: 'us-west1')
+          .httpsCallable('stravaAuthInitiate');
       final response = await callable.call(<String, dynamic>{
         'authorizationCode': code,
       });

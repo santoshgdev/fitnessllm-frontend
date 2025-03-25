@@ -18280,17 +18280,22 @@
     },
     EncodeUtility_encodeMapData_closure: function EncodeUtility_encodeMapData_closure() {
     },
-    FirebaseFunctions_instanceFor(app) {
-      var t2, newInstance,
-        t1 = app._firebase_core$_delegate.name,
-        cachedKey = t1 + "_us-central1";
+    FirebaseFunctions_instanceFor(region) {
+      var cachedKey, t2, newInstance,
+        t1 = $.Firebase_delegatePackingProperty,
+        app = (t1 == null ? $.Firebase_delegatePackingProperty = $.$get$FirebasePlatform__instance() : t1).app$1("[DEFAULT]"),
+        app0 = new A.FirebaseApp(app);
+      A.PlatformInterface__verify(app, $.$get$FirebaseAppPlatform__token(), true);
+      app = app0;
+      t1 = app._firebase_core$_delegate.name;
+      cachedKey = t1 + "_" + region;
       if ($.FirebaseFunctions__cachedInstances.containsKey$1(cachedKey)) {
         t1 = $.FirebaseFunctions__cachedInstances.$index(0, cachedKey);
         t1.toString;
         return t1;
       }
       t2 = $.$get$FirebasePluginPlatform__token();
-      newInstance = new A.FirebaseFunctions(app, "us-central1", t1, "plugins.flutter.io/firebase_functions");
+      newInstance = new A.FirebaseFunctions(app, region, t1, "plugins.flutter.io/firebase_functions");
       $.$get$PlatformInterface__instanceTokens().$indexSet(0, newInstance, t2);
       $.FirebaseFunctions__cachedInstances.$indexSet(0, cachedKey, newInstance);
       return newInstance;
@@ -104946,7 +104951,7 @@
     _handleStravaCallback$0() {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, $async$handler = 2, $async$errorStack = [], $async$self = this, uri, code, callable, response, e, t1, route, settings, scope, app, t2, t3, exception, $async$exception;
+        $async$returnValue, $async$handler = 2, $async$errorStack = [], $async$self = this, uri, code, callable, response, e, t1, route, settings, scope, t2, t3, exception, $async$exception;
       var $async$_handleStravaCallback$0 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1) {
           $async$errorStack.push($async$result);
@@ -104980,10 +104985,7 @@
                 break;
               }
               A.print("StravaCallbackHandler: Calling cloud function with code: " + A.S(code));
-              t1 = $.Firebase_delegatePackingProperty;
-              app = (t1 == null ? $.Firebase_delegatePackingProperty = $.$get$FirebasePlatform__instance() : t1).app$1("[DEFAULT]");
-              A.PlatformInterface__verify(app, $.$get$FirebaseAppPlatform__token(), true);
-              t1 = A.FirebaseFunctions_instanceFor(new A.FirebaseApp(app));
+              t1 = A.FirebaseFunctions_instanceFor("us-west1");
               t2 = t1._cloud_functions$_delegatePackingProperty;
               if (t2 == null) {
                 t2 = $.FirebaseFunctionsPlatform__instance;
