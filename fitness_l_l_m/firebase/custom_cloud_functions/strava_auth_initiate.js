@@ -1,28 +1,36 @@
-const functions = require('firebase-functions');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const axios = require('axios');
 // To avoid deployment errors, do not call admin.initializeApp() in your code
 
+// Initialize admin if not already initialized
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+
+// Define secret
+const stravaApi = defineSecret('strava_api');
+
 // Export the function without initializing admin
-exports.stravaAuthInitiate = functions
-  .region("us-west1")
-  .runWith({
-    timeoutSeconds: 2,
-    memory: '128MB'
-  })
-  .https.onCall(async (data, context) => {
-    console.log("Function called with data:", data);
+exports.stravaAuthInitiate = onCall(
+  {
+    timeoutSeconds: 30,
+    memory: '128MB',
+    region: 'us-west1',
+    secrets: [stravaApi]
+  },
+  async (request) => {
+    const { data, auth } = request;
+    console.log("Function called with data:", JSON.stringify(data, null, 2));
 
     // Security checks
-    if (!context.auth) {
+    if (!auth) {
       console.error("Authentication missing");
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Authentication required",
-      );
+      throw new HttpsError('unauthenticated', "Authentication required");
     }
 
-    const userId = context.auth.uid;
+    const userId = auth.uid;
     console.log("Processing for user:", userId);
     const { authorizationCode } = data;
     console.log("Received authorization code:", authorizationCode);
@@ -30,38 +38,79 @@ exports.stravaAuthInitiate = functions
     try {
       console.log("Attempting Strava token exchange");
       // Exchange code with Strava
-      const clientId = functions.config().strava.client_id;
-      const clientSecret = functions.config().strava.client_secret;
+      const stravaConfig = JSON.parse(stravaApi.value());
+      console.log("Strava config (redacted):", {
+        ...stravaConfig,
+        client_secret: '[REDACTED]'
+      });
+
+      const requestBody = {
+        client_id: parseInt(stravaConfig.client_id, 10),
+        client_secret: stravaConfig.client_secret,
+        code: authorizationCode,
+        grant_type: stravaConfig.grant_type,
+      };
+      console.log("Token exchange request body (redacted):", {
+        ...requestBody,
+        client_secret: '[REDACTED]'
+      });
+
       const response = await axios.post(
         "https://www.strava.com/oauth/token",
-        {
-          client_id: clientId,
-          client_secret: clientSecret,
-          code: authorizationCode,
-          grant_type: "authorization_code",
-        },
+        requestBody
       );
 
       console.log("Strava response received:", response.data);
 
-      // Direct Firestore update
-      await admin.firestore().collection("users").doc(userId).update({
-        stravaAccessToken: response.data.access_token,
-        stravaRefreshToken: response.data.refresh_token,
-        stravaExpiresAt: response.data.expires_at,
-        stravaAthleteId: response.data.athlete.id,
+      // Create the nested structure
+      const stravaData = {
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+        expiresAt: response.data.expires_at,
+        athleteId: response.data.athlete.id,
+        athlete: response.data.athlete, // Store full athlete info
         lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      // Update Firestore with nested structure
+      const userRef = admin.firestore().collection("users").doc(userId);
+      const streamRef = userRef.collection("stream").doc("strava");
+
+      // Create a batch to ensure atomic updates
+      const batch = admin.firestore().batch();
+
+      // Update the stream/strava document
+      batch.set(streamRef, stravaData, { merge: true });
+
+      // Update the main user document with a reference
+      batch.update(userRef, {
+        'integrations.strava': {
+          connected: true,
+          athleteId: response.data.athlete.id,
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+        }
       });
+
+      // Commit the batch
+      await batch.commit();
 
       console.log("User data updated successfully");
       return { success: true };
     } catch (error) {
       console.error("Strava token exchange error:", error);
-      console.error("Error details:", error.response?.data || error.message);
-      throw new functions.https.HttpsError(
-        "internal",
-        "Failed to complete Strava connection",
-        error.response?.data || error.message,
+      if (error.response) {
+        console.error("Error response data:", JSON.stringify(error.response.data, null, 2));
+        console.error("Error response status:", error.response.status);
+        console.error("Error response headers:", error.response.headers);
+      }
+
+      // Format the error message properly
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Unknown error';
+      throw new HttpsError(
+        'internal',
+        'Failed to complete Strava connection',
+        errorMessage
       );
     }
-  });
+  }
+);

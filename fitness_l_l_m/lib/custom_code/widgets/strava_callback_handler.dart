@@ -37,7 +37,6 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   void initState() {
     super.initState();
     print('StravaCallbackHandler: initState called');
-    print('TESTING 123');
   }
 
   @override
@@ -57,9 +56,25 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
       final uri = GoRouterState.of(context).uri;
       print('StravaCallbackHandler: Current URI: $uri');
 
-      // Extract the authorization code from the URL
+      // Extract the authorization code and error from the URL
       final code = uri.queryParameters['code'];
-      print('StravaCallbackHandler: Extracted code: $code');
+      final error = uri.queryParameters['error'];
+      final scope = uri.queryParameters['scope'];
+
+      print(
+          'StravaCallbackHandler: Extracted code: ${code?.substring(0, 10)}...');
+      print('StravaCallbackHandler: Error (if any): $error');
+      print('StravaCallbackHandler: Scope: $scope');
+
+      if (error != null) {
+        print('StravaCallbackHandler: Error from Strava: $error');
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _status = 'Error from Strava: $error';
+        });
+        return;
+      }
 
       if (code == null) {
         print('StravaCallbackHandler: No code found in URL');
@@ -72,12 +87,14 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
       }
 
       // Call the cloud function with the correct parameter name
-      print('StravaCallbackHandler: Calling cloud function with code: $code');
+      print('StravaCallbackHandler: Calling cloud function with code');
       final callable = FirebaseFunctions.instanceFor(region: 'us-west1')
           .httpsCallable('stravaAuthInitiate');
+
       final response = await callable.call(<String, dynamic>{
         'authorizationCode': code,
       });
+
       print('StravaCallbackHandler: Cloud function response: $response');
 
       setState(() {

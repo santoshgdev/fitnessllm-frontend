@@ -8,31 +8,49 @@ import 'package:flutter/material.dart';
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-Future stravaAuthAction() async {
-  // Your Strava application credentials
-  const clientId = '144789'; // Replace with your actual client ID
-  const redirectUri =
-      'https://dev.fitnessllm.app/strava-callback'; // Your verified redirect URI
-  const scope =
-      'read,activity:read_all,profile:read_all'; // Required permissions
+Future stravaAuthAction(BuildContext context) async {
+  print('StravaAuthAction: Starting authentication process');
 
-  // Build the authorization URL
-  final authorizationUrl = Uri.parse('https://www.strava.com/oauth/authorize'
-          '?client_id=$clientId'
-          '&redirect_uri=${Uri.encodeComponent(redirectUri)}'
-          '&response_type=code'
-          '&approval_prompt=auto'
-          '&scope=${Uri.encodeComponent(scope)}')
-      .toString();
+  const clientId = '144789';
+  const redirectUri = 'https://dev.fitnessllm.app/strava-callback';
+  const responseType = 'code';
+  const scope = 'read,activity:read_all,profile:read_all';
 
-  // Launch the URL in browser
-  if (await canLaunch(authorizationUrl)) {
-    await launch(
-      authorizationUrl,
-      webOnlyWindowName: '_self', // Important for web apps
-    );
-  } else {
-    throw 'Could not launch Strava authorization';
+  final url = Uri.https('www.strava.com', '/oauth/authorize', {
+    'client_id': clientId,
+    'redirect_uri': redirectUri,
+    'response_type': responseType,
+    'scope': scope,
+    'approval_prompt': 'auto',
+  });
+
+  print('StravaAuthAction: Generated auth URL: $url');
+
+  try {
+    if (await canLaunchUrl(url)) {
+      print('StravaAuthAction: Launching URL');
+      if (kIsWeb) {
+        // For web, use window.open approach
+        await launchUrl(
+          url,
+          webOnlyWindowName: '_self',
+          mode: LaunchMode.platformDefault,
+        );
+      } else {
+        // For mobile platforms
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    } else {
+      print('StravaAuthAction: Could not launch URL');
+      throw Exception('Could not launch Strava authorization URL');
+    }
+  } catch (e) {
+    print('StravaAuthAction: Error launching URL: $e');
+    throw Exception('Error launching Strava authorization: $e');
   }
 }
