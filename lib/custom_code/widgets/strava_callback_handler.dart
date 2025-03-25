@@ -30,7 +30,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   Future<void> _handleStravaCallback() async {
     try {
       // Get the current URL
-      final uri = GoRouter.of(context).location;
+      final uri = GoRouterState.of(context).uri.toString();
 
       // Extract the authorization code from the URL
       final code = Uri.parse(uri).queryParameters['code'];
