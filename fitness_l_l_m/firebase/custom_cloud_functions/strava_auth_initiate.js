@@ -1,15 +1,16 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const axios = require("axios");
-const cors = require("cors")({ origin: true });
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+// To avoid deployment errors, do not call admin.initializeApp() in your code
 
-// Initialize Firebase once
-if (!admin.apps.length) admin.initializeApp();
-
-exports.stravaAuthInitiate = functions
-  .region("us-west1")
-  .https.onCall(async (data, context) => {
-    return cors(async (req, res) => {
+exports.stravaAuthInitiate = functions.region('us-west1').
+  runWith({
+    timeoutSeconds: 2,
+    memory: '128MB'
+  }).https.onCall(
+    (data, context) => {
+      if (!context.auth.uid) {
+        return;
+      }
       console.log("Function called with data:", data);
 
       // Security checks
@@ -53,14 +54,14 @@ exports.stravaAuthInitiate = functions
         });
 
         console.log("User data updated successfully");
-        res.status(200).send({ success: true });
+        return { success: true };
       } catch (error) {
         console.error("Strava token exchange error:", error);
         console.error("Error details:", error.response?.data || error.message);
-        res.status(500).send({
-          error: "Failed to complete Strava connection",
-          details: error.response?.data || error.message,
-        });
+        throw new functions.https.HttpsError(
+          "internal",
+          "Failed to complete Strava connection",
+          error.response?.data || error.message,
+        );
       }
-    });
-  });
+);
