@@ -293,7 +293,7 @@ class FFRoute {
               ? Container(
                   color: Colors.transparent,
                   child: Image.asset(
-                    'assets/images/unnamed.png',
+                    'assets/images/favicon.png',
                     fit: BoxFit.cover,
                   ),
                 )
