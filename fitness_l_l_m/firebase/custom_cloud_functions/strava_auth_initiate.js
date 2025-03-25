@@ -3,7 +3,8 @@ const admin = require('firebase-admin');
 const axios = require('axios');
 // To avoid deployment errors, do not call admin.initializeApp() in your code
 
-exports.stravaAuthInitiate = functions.region('us-west1')
+// Export the function without initializing admin
+exports.stravaAuthInitiate = functions
   .runWith({
     timeoutSeconds: 2,
     memory: '128MB'
