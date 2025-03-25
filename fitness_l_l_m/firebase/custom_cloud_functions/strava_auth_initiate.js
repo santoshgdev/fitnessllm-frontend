@@ -25,9 +25,11 @@ exports.stravaAuthInitiate = functions.https.onCall(async (data, context) => {
   try {
     console.log("Attempting Strava token exchange");
     // Exchange code with Strava
+    const clientId = functions.config().strava.client_id;
+    const clientSecret = functions.config().strava.client_secret;
     const response = await axios.post("https://www.strava.com/oauth/token", {
-      client_id: functions.config().strava.client_id,
-      client_secret: functions.config().strava.client_secret,
+      client_id: clientId,
+      client_secret: clientSecret,
       code: authorizationCode,
       grant_type: "authorization_code",
     });
