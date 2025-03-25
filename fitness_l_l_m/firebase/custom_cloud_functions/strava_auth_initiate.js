@@ -5,6 +5,7 @@ const axios = require('axios');
 
 // Export the function without initializing admin
 exports.stravaAuthInitiate = functions
+  .region("us-west1")
   .runWith({
     timeoutSeconds: 2,
     memory: '128MB'
