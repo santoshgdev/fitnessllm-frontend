@@ -56,6 +56,14 @@ class _StravaCallbackRevisedWidgetState
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
+              Container(
+                width: 1.0,
+                height: 1.0,
+                child: custom_widgets.StravaCallbackHandler(
+                  width: 1.0,
+                  height: 1.0,
+                ),
+              ),
               Expanded(
                 child: Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
@@ -248,14 +256,6 @@ class _StravaCallbackRevisedWidgetState
                                     FlutterFlowTheme.of(context).secondaryText,
                                 letterSpacing: 0.0,
                               ),
-                        ),
-                      ),
-                      Container(
-                        width: 1.0,
-                        height: 1.0,
-                        child: custom_widgets.StravaCallbackHandler(
-                          width: 1.0,
-                          height: 1.0,
                         ),
                       ),
                     ],
