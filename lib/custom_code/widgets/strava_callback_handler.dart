@@ -1,4 +1,13 @@
+// Automatic FlutterFlow imports
+import '/backend/backend.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import 'index.dart'; // Imports other custom widgets
+import '/custom_code/actions/index.dart'; // Imports custom actions
 import 'package:flutter/material.dart';
+// Begin custom widget code
+// DO NOT REMOVE OR MODIFY THE CODE ABOVE!
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,6 +34,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   void initState() {
     super.initState();
     print('StravaCallbackHandler: initState called');
+    print('TESTING 123');
     _handleStravaCallback();
   }
 
@@ -50,12 +60,13 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
         return;
       }
 
-      // Call the cloud function
+      // Call the cloud function with the correct parameter name
       print('StravaCallbackHandler: Calling cloud function with code: $code');
       final callable =
           FirebaseFunctions.instance.httpsCallable('stravaAuthInitiate');
       final response = await callable.call(<String, dynamic>{
-        'code': code,
+        'authorizationCode':
+            code, // Changed from 'code' to 'authorizationCode' to match cloud function
       });
       print('StravaCallbackHandler: Cloud function response: $response');
 
