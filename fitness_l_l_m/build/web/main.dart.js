@@ -104933,6 +104933,7 @@
     initState$0() {
       this.super$State$initState();
       A.print("StravaCallbackHandler: initState called");
+      A.print("TESTING 123");
       this._handleStravaCallback$0();
     },
     _handleStravaCallback$0() {
@@ -104960,9 +104961,9 @@
               scope = t1.dependOnInheritedWidgetOfExactType$1$0(type$.GoRouterStateRegistryScope);
               if (scope == null)
                 A.throwExpression(A.GoError$("There is no GoRouterStateRegistryScope above the current context."));
-              uri = scope.notifier._createPageRouteAssociation$2(settings, route).uri.toString$0(0);
+              uri = scope.notifier._createPageRouteAssociation$2(settings, route).uri;
               A.print("StravaCallbackHandler: Current URI: " + A.S(uri));
-              code = A.Uri_parse(uri, 0, null).get$queryParameters().$index(0, "code");
+              code = uri.get$queryParameters().$index(0, "code");
               A.print("StravaCallbackHandler: Extracted code: " + A.S(code));
               if (code == null) {
                 A.print("StravaCallbackHandler: No code found in URL");
@@ -104992,7 +104993,7 @@
               callable = new A.HttpsCallable(t1.httpsCallable$3(null, "stravaAuthInitiate", new A.HttpsCallableOptions()));
               t1 = type$.dynamic;
               $async$goto = 7;
-              return A._asyncAwait(callable.call$1$1(A.LinkedHashMap_LinkedHashMap$_literal(["code", code], type$.String, t1), t1), $async$_handleStravaCallback$0);
+              return A._asyncAwait(callable.call$1$1(A.LinkedHashMap_LinkedHashMap$_literal(["authorizationCode", code], type$.String, t1), t1), $async$_handleStravaCallback$0);
             case 7:
               // returning from await.
               response = $async$result;

@@ -29,25 +29,34 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   bool _isLoading = true;
   String _status = 'Processing Strava authorization...';
   bool _hasError = false;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
     print('StravaCallbackHandler: initState called');
     print('TESTING 123');
-    _handleStravaCallback();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasInitialized) {
+      _hasInitialized = true;
+      _handleStravaCallback();
+    }
   }
 
   Future<void> _handleStravaCallback() async {
     try {
       print('StravaCallbackHandler: Starting callback handling');
 
-      // Get the current URL
-      final uri = GoRouterState.of(context).uri.toString();
+      // Get the current URL using GoRouter
+      final uri = GoRouterState.of(context).uri;
       print('StravaCallbackHandler: Current URI: $uri');
 
       // Extract the authorization code from the URL
-      final code = Uri.parse(uri).queryParameters['code'];
+      final code = uri.queryParameters['code'];
       print('StravaCallbackHandler: Extracted code: $code');
 
       if (code == null) {
@@ -65,8 +74,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
       final callable =
           FirebaseFunctions.instance.httpsCallable('stravaAuthInitiate');
       final response = await callable.call(<String, dynamic>{
-        'authorizationCode':
-            code, // Changed from 'code' to 'authorizationCode' to match cloud function
+        'authorizationCode': code,
       });
       print('StravaCallbackHandler: Cloud function response: $response');
 
@@ -78,7 +86,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
       // Navigate back to home or profile page after 2 seconds
       Future.delayed(const Duration(seconds: 2), () {
         print('StravaCallbackHandler: Navigating to home page');
-        context.go('/'); // Adjust this path as needed
+        context.go('/');
       });
     } catch (e) {
       print('StravaCallbackHandler: Error occurred: $e');
@@ -96,20 +104,23 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
       width: widget.width ?? double.infinity,
       height: widget.height ?? 300,
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_isLoading) const CircularProgressIndicator(),
-            const SizedBox(height: 20),
-            Text(
-              _status,
-              style: TextStyle(
-                color: _hasError ? Colors.red : Colors.black,
-                fontSize: 16,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_isLoading) const CircularProgressIndicator(),
+              const SizedBox(height: 20),
+              Text(
+                _status,
+                style: TextStyle(
+                  color: _hasError ? Colors.red : Colors.black,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

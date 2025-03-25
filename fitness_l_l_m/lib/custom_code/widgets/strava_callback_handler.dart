@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 // Begin custom widget code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
+import 'index.dart'; // Imports other custom widgets
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,6 +36,7 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
   void initState() {
     super.initState();
     print('StravaCallbackHandler: initState called');
+    print('TESTING 123');
     _handleStravaCallback();
   }
 
@@ -41,12 +44,12 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
     try {
       print('StravaCallbackHandler: Starting callback handling');
 
-      // Get the current URL
-      final uri = GoRouterState.of(context).uri.toString();
+      // Get the current URL using GoRouter
+      final uri = GoRouterState.of(context).uri;
       print('StravaCallbackHandler: Current URI: $uri');
 
       // Extract the authorization code from the URL
-      final code = Uri.parse(uri).queryParameters['code'];
+      final code = uri.queryParameters['code'];
       print('StravaCallbackHandler: Extracted code: $code');
 
       if (code == null) {
@@ -59,12 +62,13 @@ class _StravaCallbackHandlerState extends State<StravaCallbackHandler> {
         return;
       }
 
-      // Call the cloud function
+      // Call the cloud function with the correct parameter name
       print('StravaCallbackHandler: Calling cloud function with code: $code');
       final callable =
           FirebaseFunctions.instance.httpsCallable('stravaAuthInitiate');
       final response = await callable.call(<String, dynamic>{
-        'code': code,
+        'authorizationCode':
+            code, // Changed from 'code' to 'authorizationCode' to match cloud function
       });
       print('StravaCallbackHandler: Cloud function response: $response');
 
