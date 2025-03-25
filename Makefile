@@ -1,9 +1,14 @@
+flutter:
+	flutterflow export-code --project ${FLUTTER_PROJECT_ID} --token ${FLUTTER_API_TOKEN}
+
 dev:
-	firebase deploy --only hosting:dev
+	make flutter
+	cd fitness_l_l_m && flutter pub add collection:^1.19.1 && flutter build web --debug
+	cd fitness_l_l_m && firebase deploy --only hosting:dev,functions
 
 prod:
 #	npm run build
-	firebase deploy --only hosting:prod
+	firebase deploy --only hosting:prod,functions
 
 repomix:
 	repomix --ignore "node_modules/*,.firebase/*"

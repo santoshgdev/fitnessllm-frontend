@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "413377316902",
+    "firebase_url": "https://stable-splicer-447620-b4-default-rtdb.firebaseio.com",
+    "project_id": "stable-splicer-447620-b4",
+    "storage_bucket": "stable-splicer-447620-b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413377316902:android:bb899de7b437820cfabee7",
+        "android_client_info": {
+          "package_name": "com.santoshgdev.fitnessllm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "413377316902-lvt9p84dcut1r5ccpkcq3off15grjh6n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.santoshgdev.fitnessllm",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "413377316902-dhv8ri6dofddtieet8qk6jb42ba3saf5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd43WXfvKDjSVaauwVNuKAARyo2KRA63U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "413377316902-dhv8ri6dofddtieet8qk6jb42ba3saf5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "413377316902-3l249lia5384gjp3935lf93st4q3a7u3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.santoshgdev.fitnessllm"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

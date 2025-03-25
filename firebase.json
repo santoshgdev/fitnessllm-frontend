@@ -2,79 +2,39 @@
   "hosting": [
     {
       "target": "dev",
-      "public": ".",
-      "rewrites": [
-        { "source": "!**/*.mjs", "destination": "/index.html" },
-        { "source": "!**/*.css", "destination": "/index.html" },
-        { "source": "!**/*.js", "destination": "/index.html" }
+      "public": "fitness_l_l_m/build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
       ],
-      "headers": [
+      "rewrites": [
         {
           "source": "**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache, no-store, must-revalidate, max-age=0"
-            }
-          ]
-        },
-        {
-          "source": "**/*.css",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "text/css"
-            }
-          ]
-        },
-        {
-          "source": "**/*.mjs",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/javascript"
-            }
-          ]
+          "destination": "/index.html"
         }
       ]
     },
     {
       "target": "prod",
-      "public": ".",
-      "rewrites": [
-        { "source": "!**/*.mjs", "destination": "/index.html" },
-        { "source": "!**/*.css", "destination": "/index.html" },
-        { "source": "!**/*.js", "destination": "/index.html" }
+      "public": "fitness_l_l_m/build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
       ],
-      "headers": [
+      "rewrites": [
         {
           "source": "**",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache, no-store, must-revalidate, max-age=0"
-            }
-          ]
-        },
-        {
-          "source": "**/*.css",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "text/css"
-            }
-          ]
-        },
-        {
-          "source": "**/*.mjs",
-          "headers": [
-            {
-              "key": "Content-Type",
-              "value": "application/javascript"
-            }
-          ]
+          "destination": "/index.html"
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "source": "fitness_l_l_m/firebase/custom_cloud_functions",
+    "predeploy": [
+      "cd \"$RESOURCE_DIR\" && npm install"
+    ]
+  }
 }

@@ -1,4 +1,90 @@
-node_modules
+# Flutter/Dart specific
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/doc/api/
+**/*.class
+**/*.log
+**/*.pyc
+**/*.swp
+**/.DS_Store
+**/.atom/
+**/.buildlog/
+**/.history
+**/.svn/
+
+# iOS/XCode specific
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/ephemeral
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+
+# Android specific
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.*
+**/android/key.properties
+**/*.jks
+
+# Firebase specific
+**/.firebase/
+**/firebase-debug.log
+**/ui-debug.log
+**/.runtimeconfig.json
+**/*.cache
+
+# Node.js specific
+**/node_modules/
+**/npm-debug.log
+**/yarn-debug.log
+**/yarn-error.log
+**/.pnp
+**/.pnp.js
+
+# IDE specific
+**/.idea/
+**/.vscode/
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.project
+**/.classpath
+**/.settings/
+
+# Project specific
 repomix-output.txt
-.idea
-.firebase/
+.last_export_timestamp
+**/coverage/
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Web related
+**/lib/generated_plugin_registrant.dart
