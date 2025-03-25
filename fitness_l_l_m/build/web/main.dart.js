@@ -104932,12 +104932,13 @@
   A._StravaCallbackHandlerState.prototype = {
     initState$0() {
       this.super$State$initState();
+      A.print("StravaCallbackHandler: initState called");
       this._handleStravaCallback$0();
     },
     _handleStravaCallback$0() {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, $async$handler = 2, $async$errorStack = [], $async$self = this, uri, code, callable, e, t1, route, settings, scope, app, t2, t3, exception, $async$exception;
+        $async$returnValue, $async$handler = 2, $async$errorStack = [], $async$self = this, uri, code, callable, response, e, t1, route, settings, scope, app, t2, t3, exception, $async$exception;
       var $async$_handleStravaCallback$0 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1) {
           $async$errorStack.push($async$result);
@@ -104948,6 +104949,7 @@
             case 0:
               // Function start
               $async$handler = 4;
+              A.print("StravaCallbackHandler: Starting callback handling");
               t1 = $async$self.get$context();
               route = A.ModalRoute__of(t1, null, type$.nullable_Object);
               if (route == null)
@@ -104959,13 +104961,17 @@
               if (scope == null)
                 A.throwExpression(A.GoError$("There is no GoRouterStateRegistryScope above the current context."));
               uri = scope.notifier._createPageRouteAssociation$2(settings, route).uri.toString$0(0);
+              A.print("StravaCallbackHandler: Current URI: " + A.S(uri));
               code = A.Uri_parse(uri, 0, null).get$queryParameters().$index(0, "code");
+              A.print("StravaCallbackHandler: Extracted code: " + A.S(code));
               if (code == null) {
+                A.print("StravaCallbackHandler: No code found in URL");
                 $async$self.setState$1(new A._StravaCallbackHandlerState__handleStravaCallback_closure($async$self));
                 // goto return
                 $async$goto = 1;
                 break;
               }
+              A.print("StravaCallbackHandler: Calling cloud function with code: " + A.S(code));
               t1 = $.Firebase_delegatePackingProperty;
               app = (t1 == null ? $.Firebase_delegatePackingProperty = $.$get$FirebasePlatform__instance() : t1).app$1("[DEFAULT]");
               A.PlatformInterface__verify(app, $.$get$FirebaseAppPlatform__token(), true);
@@ -104989,6 +104995,8 @@
               return A._asyncAwait(callable.call$1$1(A.LinkedHashMap_LinkedHashMap$_literal(["code", code], type$.String, t1), t1), $async$_handleStravaCallback$0);
             case 7:
               // returning from await.
+              response = $async$result;
+              A.print("StravaCallbackHandler: Cloud function response: " + A.S(response));
               $async$self.setState$1(new A._StravaCallbackHandlerState__handleStravaCallback_closure0($async$self));
               A.Future_Future$delayed(B.Duration_2000000, new A._StravaCallbackHandlerState__handleStravaCallback_closure1($async$self), type$.Null);
               $async$handler = 2;
@@ -105000,6 +105008,7 @@
               $async$handler = 3;
               $async$exception = $async$errorStack.pop();
               e = A.unwrapException($async$exception);
+              A.print("StravaCallbackHandler: Error occurred: " + A.S(e));
               $async$self.setState$1(new A._StravaCallbackHandlerState__handleStravaCallback_closure2($async$self, e));
               // goto after finally
               $async$goto = 6;
@@ -105054,6 +105063,7 @@
   };
   A._StravaCallbackHandlerState__handleStravaCallback_closure1.prototype = {
     call$0() {
+      A.print("StravaCallbackHandler: Navigating to home page");
       var inherited = A.GoRouter_maybeOf(this.$this.get$context());
       if (A.assertTest(inherited != null))
         A.assertThrow("No GoRouter found in context");
@@ -107028,32 +107038,33 @@
       this.super$State$dispose();
     },
     build$1(context) {
-      var t4, t5, t6, t7, t8, t9, t10, _null = null,
+      var t5, t6, t7, t8, t9, t10, t11, _null = null,
         _s11_ = "Inter Tight",
         _s5_ = "Inter",
         t1 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryBackground(),
-        t2 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primary(),
-        t3 = type$.JSArray_BoxShadow;
-      t2 = A.BoxDecoration$(_null, _null, A._setArrayType([A.BoxShadow$(4, B.BlurStyle_0, A.Color$(436207616), new A.Offset(0, 2), 0)], t3), t2, _null, _null, B.BoxShape_1);
-      t2 = A.Container$(_null, A.Align$(new A.AlignmentDirectional(0, 0), A.Icon$(B.IconData_63030_MaterialIcons_null_false, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$info(), _null, 50), _null, _null, _null), B.Clip_0, _null, _null, t2, 100, _null, _null, 100);
-      t4 = A.Text$("Authorization Complete", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s11_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 28, _null, B.FontWeight_5, _null, _null, _null), _null, _s11_, _null, B.FontWeight_6, 0), B.TextAlign_2, _null, _null);
-      t5 = A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null);
-      t5 = A.Text$("Your access token has been received and is being processed.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(t5, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _s5_, _null, _null, 0), B.TextAlign_2, _null, _null);
-      t6 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryBackground();
-      t3 = A._setArrayType([A.BoxShadow$(3, B.BlurStyle_0, A.Color$(218103808), new A.Offset(0, 1), 0)], t3);
-      t6 = A.BoxDecoration$(_null, A.BorderRadius$circular(12), t3, t6, _null, _null, B.BoxShape_0);
-      t3 = A.Text$("Status", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, B.FontWeight_5, 0), _null, _null, _null);
-      t7 = A.Text$("Saving tokens to your account...", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 14, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, _null, 0), _null, _null, _null);
-      t8 = A.Divider$((A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$alternate(), _null, 1, _null, 1);
-      t9 = A.Text$("Next Steps", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, B.FontWeight_5, 0), _null, _null, _null);
-      t10 = type$.JSArray_Widget;
-      t6 = A.Container$(_null, new A.Padding(new A.EdgeInsets(16, 16, 16, 16), A.Column$(A._setArrayType([t3, new A.Padding(new A.EdgeInsetsDirectional(0, 8, 0, 0), t7, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 16), t8, _null), t9, new A.Padding(new A.EdgeInsetsDirectional(0, 8, 0, 0), A.Text$("You will be redirected to the main application once the process is complete.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 14, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, _null, 0), _null, _null, _null), _null)], t10), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1), _null), B.Clip_0, _null, _null, t6, _null, _null, _null, 1 / 0);
-      t3 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primary();
-      t7 = A.GoogleFonts_getFont(_s11_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 16, _null, B.FontWeight_5, _null, _null, _null);
-      t7 = A.TextStyleHelper_override(t7, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$info(), _s11_, _null, _null, 0);
-      t7 = A.FFButtonWidget$(_null, new A._StravaCallbackRevisedWidgetState_build_closure(), A.FFButtonOptions$(A.BorderRadius$circular(30), _null, t3, 0, 50, _null, new A.EdgeInsetsDirectional(0, 0, 0, 0), new A.EdgeInsets(8, 8, 8, 8), t7, 1 / 0), "Return to Dashboard");
-      t3 = A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 12, _null, B.FontWeight_3, _null, _null, _null);
-      return A.GestureDetector$(_null, A.Scaffold$(_null, t1, A.SafeArea$(true, A.Column$(A._setArrayType([A.Expanded$(new A.Padding(new A.EdgeInsetsDirectional(24, 0, 24, 0), A.Column$(A._setArrayType([t2, new A.Padding(new A.EdgeInsetsDirectional(0, 24, 0, 0), t4, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 0), t5, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 32, 0, 0), t6, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 32, 0, 0), t7, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 0), A.Text$("If you are not redirected automatically, click the button above.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(t3, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _s5_, _null, _null, 0), B.TextAlign_2, _null, _null), _null), A.Container$(_null, new A.StravaCallbackHandler(1, 1, _null), B.Clip_0, _null, _null, _null, 1, _null, _null, 1)], t10), B.CrossAxisAlignment_2, B.MainAxisAlignment_2, B.MainAxisSize_1), _null), 1, _null)], t10), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1), true), this.scaffoldKey), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new A._StravaCallbackRevisedWidgetState_build_closure0(context), _null, _null, _null, _null, _null, _null);
+        t2 = A.Container$(_null, new A.StravaCallbackHandler(1, 1, _null), B.Clip_0, _null, _null, _null, 1, _null, _null, 1),
+        t3 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primary(),
+        t4 = type$.JSArray_BoxShadow;
+      t3 = A.BoxDecoration$(_null, _null, A._setArrayType([A.BoxShadow$(4, B.BlurStyle_0, A.Color$(436207616), new A.Offset(0, 2), 0)], t4), t3, _null, _null, B.BoxShape_1);
+      t3 = A.Container$(_null, A.Align$(new A.AlignmentDirectional(0, 0), A.Icon$(B.IconData_63030_MaterialIcons_null_false, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$info(), _null, 50), _null, _null, _null), B.Clip_0, _null, _null, t3, 100, _null, _null, 100);
+      t5 = A.Text$("Authorization Complete", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s11_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 28, _null, B.FontWeight_5, _null, _null, _null), _null, _s11_, _null, B.FontWeight_6, 0), B.TextAlign_2, _null, _null);
+      t6 = A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null);
+      t6 = A.Text$("Your access token has been received and is being processed.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(t6, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _s5_, _null, _null, 0), B.TextAlign_2, _null, _null);
+      t7 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryBackground();
+      t4 = A._setArrayType([A.BoxShadow$(3, B.BlurStyle_0, A.Color$(218103808), new A.Offset(0, 1), 0)], t4);
+      t7 = A.BoxDecoration$(_null, A.BorderRadius$circular(12), t4, t7, _null, _null, B.BoxShape_0);
+      t4 = A.Text$("Status", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, B.FontWeight_5, 0), _null, _null, _null);
+      t8 = A.Text$("Saving tokens to your account...", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 14, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, _null, 0), _null, _null, _null);
+      t9 = A.Divider$((A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$alternate(), _null, 1, _null, 1);
+      t10 = A.Text$("Next Steps", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _null, 16, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, B.FontWeight_5, 0), _null, _null, _null);
+      t11 = type$.JSArray_Widget;
+      t7 = A.Container$(_null, new A.Padding(new A.EdgeInsets(16, 16, 16, 16), A.Column$(A._setArrayType([t4, new A.Padding(new A.EdgeInsetsDirectional(0, 8, 0, 0), t8, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 16), t9, _null), t10, new A.Padding(new A.EdgeInsetsDirectional(0, 8, 0, 0), A.Text$("You will be redirected to the main application once the process is complete.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 14, _null, B.FontWeight_3, _null, _null, _null), _null, _s5_, _null, _null, 0), _null, _null, _null), _null)], t11), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1), _null), B.Clip_0, _null, _null, t7, _null, _null, _null, 1 / 0);
+      t4 = (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primary();
+      t8 = A.GoogleFonts_getFont(_s11_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 16, _null, B.FontWeight_5, _null, _null, _null);
+      t8 = A.TextStyleHelper_override(t8, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$info(), _s11_, _null, _null, 0);
+      t8 = A.FFButtonWidget$(_null, new A._StravaCallbackRevisedWidgetState_build_closure(), A.FFButtonOptions$(A.BorderRadius$circular(30), _null, t4, 0, 50, _null, new A.EdgeInsetsDirectional(0, 0, 0, 0), new A.EdgeInsets(8, 8, 8, 8), t8, 1 / 0), "Return to Dashboard");
+      t4 = A.GoogleFonts_getFont(_s5_, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), _null, 12, _null, B.FontWeight_3, _null, _null, _null);
+      return A.GestureDetector$(_null, A.Scaffold$(_null, t1, A.SafeArea$(true, A.Column$(A._setArrayType([t2, A.Expanded$(new A.Padding(new A.EdgeInsetsDirectional(24, 0, 24, 0), A.Column$(A._setArrayType([t3, new A.Padding(new A.EdgeInsetsDirectional(0, 24, 0, 0), t5, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 0), t6, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 32, 0, 0), t7, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 32, 0, 0), t8, _null), new A.Padding(new A.EdgeInsetsDirectional(0, 16, 0, 0), A.Text$("If you are not redirected automatically, click the button above.", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(t4, (A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$secondaryText(), _s5_, _null, _null, 0), B.TextAlign_2, _null, _null), _null)], t11), B.CrossAxisAlignment_2, B.MainAxisAlignment_2, B.MainAxisSize_1), _null), 1, _null)], t11), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1), true), this.scaffoldKey), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new A._StravaCallbackRevisedWidgetState_build_closure0(context), _null, _null, _null, _null, _null, _null);
     }
   };
   A._StravaCallbackRevisedWidgetState_initState_closure.prototype = {
