@@ -1,4 +1,4 @@
-const functions = require("firebase-functions").region("us-west1");
+const functions = require('firebase-functions');
 const admin = require("firebase-admin");
 const axios = require("axios");
 
