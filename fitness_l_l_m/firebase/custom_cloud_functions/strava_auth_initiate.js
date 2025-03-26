@@ -188,26 +188,78 @@ exports.stravaAuthInitiate = onCall(
         const statusCode = error.response.status;
         const errorData = error.response.data;
 
-        // Handle specific error cases
-        if (statusCode === 400 && errorData.errors?.[0]?.code === "invalid") {
+        console.error("Full error response:", {
+          status: statusCode,
+          data: errorData,
+          headers: error.response.headers,
+          requestData: error.config?.data
+        });
+
+        // Handle specific Strava error cases
+        if (statusCode === 400) {
+          const errorMessage = errorData.message || 'Bad Request';
+          const errors = errorData.errors || [];
+
+          // Log detailed error information
+          console.error("Strava API error details:", {
+            message: errorMessage,
+            errors: errors
+          });
+
+          // Common Strava error cases
+          if (errors.some(e => e.field === "code" || e.code === "invalid")) {
+            throw new HttpsError(
+              "invalid-argument",
+              "Invalid or expired authorization code. Please try authenticating again.",
+              { stravaError: errorData }
+            );
+          }
+
+          if (errors.some(e => e.field === "client_id" || e.field === "client_secret")) {
+            throw new HttpsError(
+              "internal",
+              "Invalid API credentials. Please contact support.",
+              { stravaError: errorData }
+            );
+          }
+
+          // Generic 400 error
           throw new HttpsError(
             "invalid-argument",
-            "Invalid authorization code. Please try authenticating again.",
-            errorData,
+            `Strava API error: ${errorMessage}`,
+            { stravaError: errorData }
           );
         }
 
-        console.error(
-          "Error response data:",
-          JSON.stringify(error.response.data, null, 2),
+        if (statusCode === 401) {
+          throw new HttpsError(
+            "unauthenticated",
+            "Authentication failed with Strava. Please try again.",
+            { stravaError: errorData }
+          );
+        }
+
+        if (statusCode === 429) {
+          throw new HttpsError(
+            "resource-exhausted",
+            "Too many requests to Strava API. Please try again later.",
+            { stravaError: errorData }
+          );
+        }
+
+        // Generic error with response
+        throw new HttpsError(
+          "unknown",
+          `Strava API error (${statusCode}): ${errorData.message || 'Unknown error'}`,
+          { stravaError: errorData }
         );
-        console.error("Error response status:", statusCode);
       }
 
+      // Network or other errors
       throw new HttpsError(
         "internal",
-        "Failed to complete Strava connection. Please try again later.",
-        error.message,
+        "Failed to connect to Strava. Please try again later.",
+        { error: error.message }
       );
     }
   },
