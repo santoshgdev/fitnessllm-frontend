@@ -142,7 +142,6 @@ exports.stravaAuthInitiate = onCall(
           tokenType: response.data.token_type || 'Bearer',
           scope: scope,
           // User metadata
-          athleteId: athleteId,
           athlete: {
             id: athleteId,
             firstname: athleteData.firstname || '',
@@ -155,13 +154,6 @@ exports.stravaAuthInitiate = onCall(
           lastTokenRefresh: now,
           connectionStatus: "active",
           version: "1.0", // For future schema migrations
-        },
-        "integrations.strava": {
-          connected: true,
-          athleteId: athleteId,
-          lastUpdated: now,
-          connectionStatus: "active",
-          scope: scope,
         },
       };
 
