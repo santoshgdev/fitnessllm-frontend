@@ -2,6 +2,7 @@ const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const axios = require('axios');
+const crypto = require('crypto');
 // To avoid deployment errors, do not call admin.initializeApp() in your code
 
 // Initialize admin if not already initialized
@@ -11,6 +12,22 @@ if (!admin.apps.length) {
 
 // Define secret
 const stravaApi = defineSecret('strava_api');
+
+// Simple encryption helper (you might want to use a more robust solution)
+function encryptToken(token) {
+  // In production, use a proper encryption key management system
+  const key = process.env.ENCRYPTION_KEY || 'your-encryption-key';
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key), iv);
+  let encrypted = cipher.update(token, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const authTag = cipher.getAuthTag();
+  return {
+    encrypted: encrypted,
+    iv: iv.toString('hex'),
+    authTag: authTag.toString('hex')
+  };
+}
 
 // Export the function without initializing admin
 exports.stravaAuthInitiate = onCall(
@@ -33,16 +50,15 @@ exports.stravaAuthInitiate = onCall(
     const userId = auth.uid;
     console.log("Processing for user:", userId);
     const { authorizationCode } = data;
-    console.log("Received authorization code:", authorizationCode);
+
+    if (!authorizationCode) {
+      throw new HttpsError('invalid-argument', 'Authorization code is required');
+    }
 
     try {
       console.log("Attempting Strava token exchange");
       // Exchange code with Strava
       const stravaConfig = JSON.parse(stravaApi.value());
-      console.log("Strava config (redacted):", {
-        ...stravaConfig,
-        client_secret: '[REDACTED]'
-      });
 
       const requestBody = {
         client_id: parseInt(stravaConfig.client_id, 10),
@@ -50,66 +66,90 @@ exports.stravaAuthInitiate = onCall(
         code: authorizationCode,
         grant_type: stravaConfig.grant_type,
       };
-      console.log("Token exchange request body (redacted):", {
-        ...requestBody,
-        client_secret: '[REDACTED]'
-      });
 
       const response = await axios.post(
         "https://www.strava.com/oauth/token",
         requestBody
       );
 
-      console.log("Strava response received:", response.data);
+      // Encrypt sensitive data
+      const accessTokenEnc = encryptToken(response.data.access_token);
+      const refreshTokenEnc = encryptToken(response.data.refresh_token);
 
-      // Create the nested structure
-      const stravaData = {
-        accessToken: response.data.access_token,
-        refreshToken: response.data.refresh_token,
-        expiresAt: response.data.expires_at,
-        athleteId: response.data.athlete.id,
-        athlete: response.data.athlete, // Store full athlete info
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
-      };
+      // Get current timestamp
+      const now = admin.firestore.Timestamp.now();
 
-      // Update Firestore with nested structure
-      const userRef = admin.firestore().collection("users").doc(userId);
-      const streamRef = userRef.collection("stream").doc("strava");
-
-      // Create a batch to ensure atomic updates
-      const batch = admin.firestore().batch();
-
-      // Update the stream/strava document
-      batch.set(streamRef, stravaData, { merge: true });
-
-      // Update the main user document with a reference
-      batch.update(userRef, {
+      // Create the data structure
+      const updateData = {
+        'stream=strava': {
+          // Encrypted tokens
+          accessToken: accessTokenEnc,
+          refreshToken: refreshTokenEnc,
+          // Authentication metadata
+          expiresAt: response.data.expires_at,
+          tokenType: response.data.token_type,
+          scope: response.data.scope,
+          // User metadata
+          athleteId: response.data.athlete.id,
+          athlete: {
+            id: response.data.athlete.id,
+            firstname: response.data.athlete.firstname,
+            lastname: response.data.athlete.lastname,
+            profile: response.data.athlete.profile,
+            // Only store essential athlete data
+          },
+          // Connection metadata
+          lastUpdated: now,
+          lastTokenRefresh: now,
+          connectionStatus: 'active',
+          version: '1.0', // For future schema migrations
+        },
         'integrations.strava': {
           connected: true,
           athleteId: response.data.athlete.id,
-          lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+          lastUpdated: now,
+          connectionStatus: 'active',
+          scope: response.data.scope,
         }
-      });
+      };
 
-      // Commit the batch
-      await batch.commit();
+      // Update Firestore with merge to preserve any existing data
+      await admin.firestore()
+        .collection("users")
+        .doc(userId)
+        .update(updateData);
 
       console.log("User data updated successfully");
-      return { success: true };
+      return {
+        success: true,
+        athleteId: response.data.athlete.id,
+        scope: response.data.scope
+      };
     } catch (error) {
       console.error("Strava token exchange error:", error);
+
+      // Enhanced error handling
       if (error.response) {
+        const statusCode = error.response.status;
+        const errorData = error.response.data;
+
+        // Handle specific error cases
+        if (statusCode === 400 && errorData.errors?.[0]?.code === 'invalid') {
+          throw new HttpsError(
+            'invalid-argument',
+            'Invalid authorization code. Please try authenticating again.',
+            errorData
+          );
+        }
+
         console.error("Error response data:", JSON.stringify(error.response.data, null, 2));
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
+        console.error("Error response status:", statusCode);
       }
 
-      // Format the error message properly
-      const errorMessage = error.response?.data?.message || error.response?.data || error.message || 'Unknown error';
       throw new HttpsError(
         'internal',
-        'Failed to complete Strava connection',
-        errorMessage
+        'Failed to complete Strava connection. Please try again later.',
+        error.message
       );
     }
   }
