@@ -10,8 +10,9 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-// Define single secret containing all credentials
+// Define both secrets
 const stravaApi = defineSecret("strava_api");
+const encryptToken = defineSecret("encrypt_token");
 
 /**
  * Encrypts a string using AES-256-CBC and returns a base64 string containing all necessary components
@@ -65,7 +66,7 @@ exports.stravaAuthInitiate = onCall(
     timeoutSeconds: 30,
     memory: "128MB",
     region: "us-west1",
-    secrets: [stravaApi],
+    secrets: [stravaApi, encryptToken],
   },
   async (request) => {
     const { data, auth } = request;
@@ -90,18 +91,20 @@ exports.stravaAuthInitiate = onCall(
 
     try {
       console.log("Attempting Strava token exchange");
-      // Get config including both API credentials and encryption key
-      const config = JSON.parse(stravaApi.value());
-
-      if (!config.encryption_key) {
+      // Get Strava credentials from stravaApi
+      const stravaConfig = JSON.parse(stravaApi.value());
+      // Get encryption key from dedicated secret
+      const encryptConfig = JSON.parse(encryptToken.value());
+      
+      if (!encryptConfig.token) {
         throw new HttpsError("internal", "Encryption key not configured");
       }
 
       const requestBody = {
-        client_id: parseInt(config.client_id, 10),
-        client_secret: config.client_secret,
+        client_id: parseInt(stravaConfig.client_id, 10),
+        client_secret: stravaConfig.client_secret,
         code: authorizationCode,
-        grant_type: config.grant_type,
+        grant_type: stravaConfig.grant_type,
       };
 
       const response = await axios.post(
@@ -109,14 +112,14 @@ exports.stravaAuthInitiate = onCall(
         requestBody,
       );
 
-      // Encrypt tokens using the encryption key from config
+      // Use encryption key from the dedicated encrypt_token secret
       const accessTokenEnc = encryptToken(
         response.data.access_token,
-        config.encryption_key,
+        encryptConfig.token
       );
       const refreshTokenEnc = encryptToken(
         response.data.refresh_token,
-        config.encryption_key,
+        encryptConfig.token
       );
 
       // Get current timestamp
