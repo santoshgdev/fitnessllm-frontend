@@ -100,6 +100,10 @@ exports.stravaAuthInitiate = onCall(
         throw new HttpsError("internal", "Encryption key not configured");
       }
 
+      if (!stravaConfig.client_id || !stravaConfig.client_secret) {
+        throw new HttpsError("invalid-argument", "Invalid Strava credentials");
+      }
+
       const requestBody = {
         client_id: parseInt(stravaConfig.client_id, 10),
         client_secret: stravaConfig.client_secret,
