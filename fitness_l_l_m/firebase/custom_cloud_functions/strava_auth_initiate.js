@@ -10,9 +10,8 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-// Define both secrets
+// Define single secret containing all credentials
 const stravaApi = defineSecret("strava_api");
-const encryptToken = defineSecret("encrypt_token");
 
 /**
  * Encrypts a string using AES-256-CBC and returns a base64 string containing all necessary components
@@ -66,7 +65,7 @@ exports.stravaAuthInitiate = onCall(
     timeoutSeconds: 30,
     memory: "128MB",
     region: "us-west1",
-    secrets: [stravaApi, encryptToken],
+    secrets: [stravaApi],
   },
   async (request) => {
     const { data, auth } = request;
@@ -91,24 +90,18 @@ exports.stravaAuthInitiate = onCall(
 
     try {
       console.log("Attempting Strava token exchange");
-      // Get Strava credentials from stravaApi
-      const stravaConfig = JSON.parse(stravaApi.value());
-      // Get encryption key from dedicated secret
-      const encryptConfig = JSON.parse(encryptToken.value());
-      
-      if (!encryptConfig.token) {
+      // Get config including both API credentials and encryption key
+      const config = JSON.parse(stravaApi.value());
+
+      if (!config.encryption_key) {
         throw new HttpsError("internal", "Encryption key not configured");
       }
 
-      if (!stravaConfig.client_id || !stravaConfig.client_secret) {
-        throw new HttpsError("invalid-argument", "Invalid Strava credentials");
-      }
-
       const requestBody = {
-        client_id: parseInt(stravaConfig.client_id, 10),
-        client_secret: stravaConfig.client_secret,
+        client_id: parseInt(config.client_id, 10),
+        client_secret: config.client_secret,
         code: authorizationCode,
-        grant_type: stravaConfig.grant_type,
+        grant_type: config.grant_type,
       };
 
       const response = await axios.post(
@@ -116,26 +109,29 @@ exports.stravaAuthInitiate = onCall(
         requestBody,
       );
 
-      // Use encryption key from the dedicated encrypt_token secret
+      // Encrypt tokens using the encryption key from config
       const accessTokenEnc = encryptToken(
         response.data.access_token,
-        encryptConfig.token
+        config.encryption_key,
       );
       const refreshTokenEnc = encryptToken(
         response.data.refresh_token,
-        encryptConfig.token
+        config.encryption_key,
       );
 
       // Get current timestamp
       const now = admin.firestore.Timestamp.now();
 
       // Safely get values with defaults
-      const scope = response.data.scope || 'read,activity:read';  // Default minimal scope
+      const scope = response.data.scope || "read,activity:read"; // Default minimal scope
       const athleteData = response.data.athlete || {};
       const athleteId = athleteData.id;
 
       if (!athleteId) {
-        throw new HttpsError('internal', 'Invalid response from Strava: missing athlete ID');
+        throw new HttpsError(
+          "internal",
+          "Invalid response from Strava: missing athlete ID",
+        );
       }
 
       // Create the data structure
@@ -145,15 +141,17 @@ exports.stravaAuthInitiate = onCall(
           accessToken: accessTokenEnc,
           refreshToken: refreshTokenEnc,
           // Authentication metadata
-          expiresAt: response.data.expires_at || (Math.floor(Date.now() / 1000) + 21600), // Default 6 hours
-          tokenType: response.data.token_type || 'Bearer',
+          expiresAt:
+            response.data.expires_at || Math.floor(Date.now() / 1000) + 21600, // Default 6 hours
+          tokenType: response.data.token_type || "Bearer",
           scope: scope,
           // User metadata
+          athleteId: athleteId,
           athlete: {
             id: athleteId,
-            firstname: athleteData.firstname || '',
-            lastname: athleteData.lastname || '',
-            profile: athleteData.profile || '',
+            firstname: athleteData.firstname || "",
+            lastname: athleteData.lastname || "",
+            profile: athleteData.profile || "",
             // Only store essential athlete data
           },
           // Connection metadata
@@ -162,9 +160,19 @@ exports.stravaAuthInitiate = onCall(
           connectionStatus: "active",
           version: "1.0", // For future schema migrations
         },
+        "integrations.strava": {
+          connected: true,
+          athleteId: athleteId,
+          lastUpdated: now,
+          connectionStatus: "active",
+          scope: scope,
+        },
       };
 
-      console.log("Updating Firestore with data:", JSON.stringify(updateData, null, 2));
+      console.log(
+        "Updating Firestore with data:",
+        JSON.stringify(updateData, null, 2),
+      );
 
       // Update Firestore with merge to preserve any existing data
       await admin
@@ -187,78 +195,26 @@ exports.stravaAuthInitiate = onCall(
         const statusCode = error.response.status;
         const errorData = error.response.data;
 
-        console.error("Full error response:", {
-          status: statusCode,
-          data: errorData,
-          headers: error.response.headers,
-          requestData: error.config?.data
-        });
-
-        // Handle specific Strava error cases
-        if (statusCode === 400) {
-          const errorMessage = errorData.message || 'Bad Request';
-          const errors = errorData.errors || [];
-
-          // Log detailed error information
-          console.error("Strava API error details:", {
-            message: errorMessage,
-            errors: errors
-          });
-
-          // Common Strava error cases
-          if (errors.some(e => e.field === "code" || e.code === "invalid")) {
-            throw new HttpsError(
-              "invalid-argument",
-              "Invalid or expired authorization code. Please try authenticating again.",
-              { stravaError: errorData }
-            );
-          }
-
-          if (errors.some(e => e.field === "client_id" || e.field === "client_secret")) {
-            throw new HttpsError(
-              "internal",
-              "Invalid API credentials. Please contact support.",
-              { stravaError: errorData }
-            );
-          }
-
-          // Generic 400 error
+        // Handle specific error cases
+        if (statusCode === 400 && errorData.errors?.[0]?.code === "invalid") {
           throw new HttpsError(
             "invalid-argument",
-            `Strava API error: ${errorMessage}`,
-            { stravaError: errorData }
+            "Invalid authorization code. Please try authenticating again.",
+            errorData,
           );
         }
 
-        if (statusCode === 401) {
-          throw new HttpsError(
-            "unauthenticated",
-            "Authentication failed with Strava. Please try again.",
-            { stravaError: errorData }
-          );
-        }
-
-        if (statusCode === 429) {
-          throw new HttpsError(
-            "resource-exhausted",
-            "Too many requests to Strava API. Please try again later.",
-            { stravaError: errorData }
-          );
-        }
-
-        // Generic error with response
-        throw new HttpsError(
-          "unknown",
-          `Strava API error (${statusCode}): ${errorData.message || 'Unknown error'}`,
-          { stravaError: errorData }
+        console.error(
+          "Error response data:",
+          JSON.stringify(error.response.data, null, 2),
         );
+        console.error("Error response status:", statusCode);
       }
 
-      // Network or other errors
       throw new HttpsError(
         "internal",
-        "Failed to connect to Strava. Please try again later.",
-        { error: error.message }
+        "Failed to complete Strava connection. Please try again later.",
+        error.message,
       );
     }
   },

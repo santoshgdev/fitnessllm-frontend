@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import '/backend/backend.dart';
+import '/backend/schema/structs/index.dart';
+import '/backend/schema/enums/enums.dart';
 
 import '/auth/base_auth_user_provider.dart';
 
@@ -83,13 +85,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? LoggedInWidget() : HomeWidget(),
+          appStateNotifier.loggedIn ? DashboardWidget() : HomeWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
           builder: (context, _) =>
-              appStateNotifier.loggedIn ? LoggedInWidget() : HomeWidget(),
+              appStateNotifier.loggedIn ? DashboardWidget() : HomeWidget(),
         ),
         FFRoute(
           name: HomeWidget.routeName,
@@ -97,15 +99,24 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => HomeWidget(),
         ),
         FFRoute(
-          name: LoggedInWidget.routeName,
-          path: LoggedInWidget.routePath,
-          requireAuth: true,
-          builder: (context, params) => LoggedInWidget(),
-        ),
-        FFRoute(
           name: StravaCallbackRevisedWidget.routeName,
           path: StravaCallbackRevisedWidget.routePath,
           builder: (context, params) => StravaCallbackRevisedWidget(),
+        ),
+        FFRoute(
+          name: SettingsWidget.routeName,
+          path: SettingsWidget.routePath,
+          builder: (context, params) => SettingsWidget(),
+        ),
+        FFRoute(
+          name: IntegrationsWidget.routeName,
+          path: IntegrationsWidget.routePath,
+          builder: (context, params) => IntegrationsWidget(),
+        ),
+        FFRoute(
+          name: DashboardWidget.routeName,
+          path: DashboardWidget.routePath,
+          builder: (context, params) => DashboardWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -225,6 +236,7 @@ class FFParameters {
     ParamType type, {
     bool isList = false,
     List<String>? collectionNamePath,
+    StructBuilder<T>? structBuilder,
   }) {
     if (futureParamValues.containsKey(paramName)) {
       return futureParamValues[paramName];
@@ -243,6 +255,7 @@ class FFParameters {
       type,
       isList,
       collectionNamePath: collectionNamePath,
+      structBuilder: structBuilder,
     );
   }
 }

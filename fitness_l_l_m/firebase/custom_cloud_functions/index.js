@@ -1,6 +1,5 @@
-const admin = require("firebase-admin");
-const functions = require("firebase-functions");
-
+const admin = require("firebase-admin/app");
 admin.initializeApp();
 
-exports.stravaAuthInitiate = require("./strava_auth_initiate").stravaAuthInitiate;
+const stravaAuthInitiate = require("./strava_auth_initiate.js");
+exports.stravaAuthInitiate = stravaAuthInitiate.stravaAuthInitiate;

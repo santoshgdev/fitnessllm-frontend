@@ -38,6 +38,7 @@ dependencies:
   cloud_functions_platform_interface: 5.5.39
   cloud_functions_web: 4.10.4
   collection: ^1.19.1
+  equatable: 2.0.5
   firebase_auth: 5.3.3
   firebase_auth_platform_interface: 7.4.9
   firebase_auth_web: 5.13.4
@@ -58,8 +59,10 @@ dependencies:
   google_sign_in_ios: 5.7.7
   google_sign_in_platform_interface: 2.4.5
   google_sign_in_web: 0.12.4+2
+  http: 1.2.2
   intl: 0.19.0
   json_path: 0.7.2
+  mime_type: 1.0.0
   page_transition: 2.1.0
   path_provider: 2.1.4
   path_provider_android: 2.2.10
@@ -117,7 +120,7 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   web:
     generate: true
-  image_path: 'assets/images/app_launcher_icon.png'
+  image_path: 'assets/images/app_launcher_icon.jpg'
 
 
 # For information on the generic Dart part of this file, see the

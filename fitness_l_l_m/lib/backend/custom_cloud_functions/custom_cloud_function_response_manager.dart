@@ -1,3 +1,5 @@
+import '/backend/schema/structs/index.dart';
+
 class StravaAuthInitiateCloudFunctionCallResponse {
   StravaAuthInitiateCloudFunctionCallResponse({
     this.errorCode,
