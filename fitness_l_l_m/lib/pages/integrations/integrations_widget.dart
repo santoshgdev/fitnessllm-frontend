@@ -243,7 +243,10 @@ class _IntegrationsWidgetState extends State<IntegrationsWidget> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: Image.asset(
-                                      'assets/images/btn_strava_connect_with_orange_x2.png',
+                                      Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? 'assets/images/btn_strava_connect_with_orange.png'
+                                          : 'assets/images/btn_strava_connect_with_white.png',
                                       width: 180.0,
                                       height: 52.2,
                                       fit: BoxFit.fitWidth,

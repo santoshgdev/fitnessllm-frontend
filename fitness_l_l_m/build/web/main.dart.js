@@ -103870,7 +103870,8 @@
       t7 = A._setArrayType([A.Row$(A.ListDivideExt_divide(A._setArrayType([t5, A.Column$(A._setArrayType([A.Text$("Strava", _null, _null, _null, _null, _null, _null, _null, A.TextStyleHelper_override(t6, _null, t7, _null, A.part_i_PartI_interTight$closure().call$3$color$fontSize$fontWeight((A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? A.DarkModeTheme$() : A.LightModeTheme$()).get$primaryText(), 18, B.FontWeight_5).fontStyle, B.FontWeight_5, 0), _null, _null, _null)], t8), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1)], t8), A.SizedBox$(_null, _null, 12), t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1)], t8);
       if (!$.$get$FFAppState__instance()._isStravaConnected) {
         t5 = A.BorderRadius$circular(8);
-        t6 = A.ResizeImage_resizeIfNeeded(_null, _null, new A.AssetImage("assets/images/btn_strava_connect_with_orange_x2.png", _null, _null));
+        t6 = A.Theme_of(context).colorScheme.brightness === B.Brightness_0 ? "assets/images/btn_strava_connect_with_orange.png" : "assets/images/btn_strava_connect_with_white.png";
+        t6 = A.ResizeImage_resizeIfNeeded(_null, _null, new A.AssetImage(t6, _null, _null));
         t7.push(A.InkWell$(false, _null, true, A.ClipRRect$(t5, new A.Image(t6, _null, _null, _null, 180, 52.2, _null, B.FilterQuality_2, _null, B.BoxFit_3, B.Alignment_0_0, B.ImageRepeat_3, false, _null)), _null, true, B.Color_Edl, _null, B.Color_Edl, B.Color_Edl, _null, _null, _null, _null, _null, new A._IntegrationsWidgetState_build_closure(), _null, B.Color_Edl, _null, _null));
       }
       if ($.$get$FFAppState__instance()._isStravaConnected) {
