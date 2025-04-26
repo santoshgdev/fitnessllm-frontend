@@ -1,5 +1,5 @@
 flutter:
-	flutterflow export-code --project ${FLUTTER_PROJECT_ID} --token ${FLUTTER_API_TOKEN}
+	flutterflow export-code --project ${FLUTTER_PROJECT_ID} --token ${FLUTTER_API_TOKEN} --include-assets
 
 dev:
 	make flutter

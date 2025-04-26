@@ -6,7 +6,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
   setPersistence,
   browserLocalPersistence,
   signOut,
@@ -190,7 +190,7 @@ onAuthStateChanged(auth, (user) => {
 /* = Functions - Firebase - Authentication = */
 
 function authSignInWithGoogle() {
-  signInWithPopup(auth, provider)
+  signInWithRedirect(auth, provider)
     .then((result) => {
       console.log("Signed in with Google");
     })
