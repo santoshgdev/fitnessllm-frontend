@@ -101,7 +101,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: StravaCallbackRevisedWidget.routeName,
           path: StravaCallbackRevisedWidget.routePath,
-          builder: (context, params) => StravaCallbackRevisedWidget(),
+          builder: (context, params) => StravaCallbackRevisedWidget(
+            code: params.getParam(
+              'code',
+              ParamType.String,
+            ),
+          ),
         ),
         FFRoute(
           name: SettingsWidget.routeName,

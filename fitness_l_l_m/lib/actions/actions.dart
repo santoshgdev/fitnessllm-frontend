@@ -75,12 +75,6 @@ Future tokenRefresh(
   );
 }
 
-/// Update Stream/Integration App State
-Future updateState(BuildContext context) async {
-  FFAppState().apiPayload = <String, dynamic>{
-    'target_api': 'token_refresh',
-    'payload': <String, String?>{
-      'data_source': 'strava',
-    },
-  };
+Future updateIntegrationStatus(BuildContext context) async {
+  FFAppState().isStravaConnected = false;
 }

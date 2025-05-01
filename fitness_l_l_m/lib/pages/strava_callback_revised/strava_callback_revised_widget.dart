@@ -1,12 +1,10 @@
-import '/backend/custom_cloud_functions/custom_cloud_function_response_manager.dart';
-import '/backend/schema/structs/index.dart';
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
-import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/index.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +13,13 @@ import 'strava_callback_revised_model.dart';
 export 'strava_callback_revised_model.dart';
 
 class StravaCallbackRevisedWidget extends StatefulWidget {
-  const StravaCallbackRevisedWidget({super.key});
+  const StravaCallbackRevisedWidget({
+    super.key,
+    required this.code,
+  });
+
+  /// Authorization code from strava callback
+  final String? code;
 
   static String routeName = 'Strava_callback_revised';
   static String routePath = '/strava-callback';
@@ -38,55 +42,65 @@ class _StravaCallbackRevisedWidgetState
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      try {
-        final result = await FirebaseFunctions.instanceFor(region: 'us-west1')
-            .httpsCallable('stravaAuthInitiate')
-            .call({});
-        _model.cloudFunctionk75 = StravaAuthInitiateCloudFunctionCallResponse(
-          succeeded: true,
+      _model.pageLevelApiPayload = <String, dynamic>{
+        'target_api': 'strava_auth_initiate',
+        'payload': <String, String?>{
+          'code': widget!.code,
+        },
+      };
+      safeSetState(() {});
+      // Used for updating isLoading state
+      _model.isLoading = true;
+      safeSetState(() {});
+      _model.apiResponse = await APIRouterCall.call(
+        apiPayloadJson: _model.pageLevelApiPayload,
+        authToken: currentJwtToken,
+      );
+
+      if ((_model.apiResponse?.succeeded ?? true)) {
+        await showDialog(
+          context: context,
+          builder: (alertDialogContext) {
+            return AlertDialog(
+              title: Text('Success!'),
+              content: Text('Strava connected'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(alertDialogContext),
+                  child: Text('Ok'),
+                ),
+              ],
+            );
+          },
         );
-      } on FirebaseFunctionsException catch (error) {
-        _model.cloudFunctionk75 = StravaAuthInitiateCloudFunctionCallResponse(
-          errorCode: error.code,
-          succeeded: false,
-        );
+        _model.isLoading = false;
+        safeSetState(() {});
+        await Future.delayed(const Duration(milliseconds: 2000));
+      } else {
+        var confirmDialogResponse = await showDialog<bool>(
+              context: context,
+              builder: (alertDialogContext) {
+                return AlertDialog(
+                  title: Text('Error'),
+                  content: Text(
+                      'Unable to initialize Strava integration. Contact Santosh.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(alertDialogContext, false),
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(alertDialogContext, true),
+                      child: Text('Confirm'),
+                    ),
+                  ],
+                );
+              },
+            ) ??
+            false;
       }
 
-      if (_model.cloudFunctionk75!.succeeded!) {
-        await showDialog(
-          context: context,
-          builder: (alertDialogContext) {
-            return AlertDialog(
-              title: Text('Alert'),
-              content: Text('Success'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      } else {
-        await showDialog(
-          context: context,
-          builder: (alertDialogContext) {
-            return AlertDialog(
-              title: Text('Alert'),
-              content: Text('Failed'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(alertDialogContext),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      }
+      context.pushNamed(IntegrationsWidget.routeName);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -114,14 +128,6 @@ class _StravaCallbackRevisedWidgetState
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Container(
-                width: 1.0,
-                height: 1.0,
-                child: custom_widgets.StravaCallbackHandler(
-                  width: 1.0,
-                  height: 1.0,
-                ),
-              ),
               Expanded(
                 child: Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
@@ -130,37 +136,50 @@ class _StravaCallbackRevisedWidgetState
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).primary,
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 4.0,
-                              color: Color(0x1A000000),
-                              offset: Offset(
-                                0.0,
-                                2.0,
-                              ),
-                            )
-                          ],
-                          shape: BoxShape.circle,
-                        ),
-                        child: Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
-                          child: Icon(
-                            Icons.check_rounded,
-                            color: FlutterFlowTheme.of(context).info,
-                            size: 50.0,
+                      if (!_model.isLoading)
+                        Container(
+                          width: 100.0,
+                          height: 100.0,
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).primary,
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 4.0,
+                                color: Color(0x1A000000),
+                                offset: Offset(
+                                  0.0,
+                                  2.0,
+                                ),
+                              )
+                            ],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Align(
+                            alignment: AlignmentDirectional(0.0, 0.0),
+                            child: Icon(
+                              Icons.check_rounded,
+                              color: FlutterFlowTheme.of(context).info,
+                              size: 50.0,
+                            ),
                           ),
                         ),
-                      ),
+                      if (_model.isLoading)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            'assets/images/Triangles_indicator.gif',
+                            width: 100.0,
+                            height: 100.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       Padding(
                         padding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 0.0),
                         child: Text(
-                          'Authorization Complete',
+                          _model.isLoading
+                              ? 'Authorization In-Progress'
+                              : 'Authorization Complete',
                           textAlign: TextAlign.center,
                           style: FlutterFlowTheme.of(context)
                               .headlineMedium

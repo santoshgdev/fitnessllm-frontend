@@ -6,6 +6,10 @@ enum ApiPayload {
   payload,
 }
 
+enum Streams {
+  strava,
+}
+
 extension FFEnumExtensions<T extends Enum> on T {
   String serialize() => name;
 }
@@ -19,6 +23,8 @@ T? deserializeEnum<T>(String? value) {
   switch (T) {
     case (ApiPayload):
       return ApiPayload.values.deserialize(value) as T?;
+    case (Streams):
+      return Streams.values.deserialize(value) as T?;
     default:
       return null;
   }
